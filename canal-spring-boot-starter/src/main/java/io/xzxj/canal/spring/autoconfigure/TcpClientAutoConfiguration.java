@@ -36,16 +36,16 @@ public class TcpClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "canal.async", havingValue = "true")
-    public IMessageHandler messageHandler(List<EntryListener<?>> entryListenerList,
-                                          RowDataHandler<CanalEntry.RowData> rowDataHandler,
-                                          ExecutorService executorService) {
+    @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
+    public IMessageHandler asyncMessageHandler(List<EntryListener<?>> entryListenerList,
+                                               RowDataHandler<CanalEntry.RowData> rowDataHandler,
+                                               ExecutorService executorService) {
         return new AsyncMessageHandlerImpl(entryListenerList, rowDataHandler, executorService);
     }
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "false")
-    public IMessageHandler messageHandler(List<EntryListener<?>> entryListenerList,
+    public IMessageHandler syncMessageHandler(List<EntryListener<?>> entryListenerList,
                                           RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         return new SyncMessageHandlerImpl(entryListenerList, rowDataHandler);
     }
