@@ -1,5 +1,19 @@
+spring:
+  kafka:
+    bootstrap-servers: 10.13.14.222:9092,10.13.14.222:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+      auto-commit-interval: 100
+
 canal:
-  server: 127.0.0.1:11111
-  destination: example
+  server: ${spring.kafka.bootstrap-servers}
+  destination: sample-data
   async: true
-  server-mode: tcp
+  server-mode: kafka
+  kafka:
+    groupId: sample-test-group

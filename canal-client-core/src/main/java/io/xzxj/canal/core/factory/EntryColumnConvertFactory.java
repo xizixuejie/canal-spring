@@ -14,7 +14,7 @@ import java.util.Set;
  * @author xzxj
  * @date 2023/3/12 12:10
  */
-public class EntryColumnModelFactory extends AbstractIEntityConvertFactory<List<CanalEntry.Column>> {
+public class EntryColumnConvertFactory extends AbstractConvertFactory<List<CanalEntry.Column>> {
 
     @Override
     <R> R newInstance(Class<R> clazz, List<CanalEntry.Column> columnList) throws InstantiationException, IllegalAccessException, NoSuchFieldException {
@@ -30,7 +30,7 @@ public class EntryColumnModelFactory extends AbstractIEntityConvertFactory<List<
     }
 
     @Override
-    public <R> R newInstance(EntryListener entryHandler, List<CanalEntry.Column> columnList, Set<String> updateColumn) throws InstantiationException, IllegalAccessException, NoSuchFieldException {
+    public <R> R newInstance(EntryListener<?> entryHandler, List<CanalEntry.Column> columnList, Set<String> updateColumn) throws InstantiationException, IllegalAccessException, NoSuchFieldException {
         Class<R> tableClass = TableInfoUtil.getTableClass(entryHandler);
         if (tableClass == null) {
             return null;

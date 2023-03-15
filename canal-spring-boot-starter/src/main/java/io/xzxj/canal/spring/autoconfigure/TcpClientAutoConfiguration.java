@@ -1,8 +1,9 @@
 package io.xzxj.canal.spring.autoconfigure;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.alibaba.otter.canal.protocol.Message;
 import io.xzxj.canal.core.client.TcpCanalClient;
-import io.xzxj.canal.core.factory.EntryColumnModelFactory;
+import io.xzxj.canal.core.factory.EntryColumnConvertFactory;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
 import io.xzxj.canal.core.handler.impl.AsyncMessageHandlerImpl;
@@ -37,26 +38,26 @@ public class TcpClientAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
-    public IMessageHandler asyncMessageHandler(List<EntryListener<?>> entryListenerList,
-                                               RowDataHandler<CanalEntry.RowData> rowDataHandler,
-                                               ExecutorService executorService) {
+    public IMessageHandler<Message> asyncMessageHandler(List<EntryListener<?>> entryListenerList,
+                                                        RowDataHandler<CanalEntry.RowData> rowDataHandler,
+                                                        ExecutorService executorService) {
         return new AsyncMessageHandlerImpl(entryListenerList, rowDataHandler, executorService);
     }
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "false")
-    public IMessageHandler syncMessageHandler(List<EntryListener<?>> entryListenerList,
-                                          RowDataHandler<CanalEntry.RowData> rowDataHandler) {
+    public IMessageHandler<Message> syncMessageHandler(List<EntryListener<?>> entryListenerList,
+                                                       RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         return new SyncMessageHandlerImpl(entryListenerList, rowDataHandler);
     }
 
     @Bean
     public RowDataHandler<CanalEntry.RowData> rowDataHandler() {
-        return new RowDataHandlerImpl(new EntryColumnModelFactory());
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory());
     }
 
     @Bean(initMethod = "init", destroyMethod = "destroy")
-    public TcpCanalClient tcpCanalClient(IMessageHandler messageHandler) {
+    public TcpCanalClient tcpCanalClient(IMessageHandler<Message> messageHandler) {
         String server = canalProperties.getServer();
         String[] array = server.split(":");
         return TcpCanalClient.builder()

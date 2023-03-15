@@ -7,11 +7,10 @@ import io.xzxj.canal.core.util.TableInfoUtil;
  * @author xzxj
  * @date 2023/3/11 16:16
  */
-public abstract class AbstractIEntityConvertFactory<T> implements IEntityConvertFactory<T> {
+public abstract class AbstractConvertFactory<T> implements IConvertFactory<T> {
 
     @Override
-    public <R> R newInstance(EntryListener entryListener, T t) throws Exception {
-        //String tableName = TableInfoUtil.getTableName(entryListener);
+    public <R> R newInstance(EntryListener<?> entryListener, T t) throws Exception {
         Class<R> tableClass = TableInfoUtil.getTableClass(entryListener);
         if (tableClass != null) {
             return newInstance(tableClass, t);

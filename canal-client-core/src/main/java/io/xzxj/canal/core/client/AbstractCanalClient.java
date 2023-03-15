@@ -46,7 +46,7 @@ public abstract class AbstractCanalClient implements ICanalClient {
         try {
             log.info("canal client connecting");
             connector.connect();
-            connector.subscribe(filter);
+            this.subscribe();
             log.info("canal client connect success");
         } catch (CanalClientException e) {
             log.error("canal client connect error: {}", e.getMessage(), e);
@@ -54,8 +54,13 @@ public abstract class AbstractCanalClient implements ICanalClient {
         }
     }
 
+    public void subscribe() {
+        connector.subscribe(filter);
+    }
+
     @Override
     public void destroy() {
+        connector.unsubscribe();
         log.info("canal client destroy");
         if (thread != null) {
             thread.interrupt();

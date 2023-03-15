@@ -2,6 +2,7 @@ package io.xzxj.canal.spring.properties;
 
 import io.xzxj.canal.spring.enums.CanalServerMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +33,8 @@ public class CanalProperties {
 
     private TimeUnit unit = TimeUnit.SECONDS;
 
+    @NestedConfigurationProperty
+    private CanalKafkaProperties kafka;
 
     public CanalServerMode getServerMode() {
         return serverMode;
@@ -111,6 +114,14 @@ public class CanalProperties {
 
     public void setUnit(TimeUnit unit) {
         this.unit = unit;
+    }
+
+    public CanalKafkaProperties getKafka() {
+        return kafka;
+    }
+
+    public void setKafka(CanalKafkaProperties kafka) {
+        this.kafka = kafka;
     }
 
 }

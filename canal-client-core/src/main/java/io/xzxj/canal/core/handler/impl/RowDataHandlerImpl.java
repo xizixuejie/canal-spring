@@ -1,7 +1,7 @@
 package io.xzxj.canal.core.handler.impl;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import io.xzxj.canal.core.factory.IEntityConvertFactory;
+import io.xzxj.canal.core.factory.IConvertFactory;
 import io.xzxj.canal.core.handler.RowDataHandler;
 import io.xzxj.canal.core.listener.EntryListener;
 import org.slf4j.Logger;
@@ -19,10 +19,10 @@ public class RowDataHandlerImpl implements RowDataHandler<CanalEntry.RowData> {
 
     private static final Logger log = LoggerFactory.getLogger(RowDataHandlerImpl.class);
 
-    private final IEntityConvertFactory<List<CanalEntry.Column>> modelFactory;
+    private final IConvertFactory<List<CanalEntry.Column>> convertFactory;
 
-    public RowDataHandlerImpl(IEntityConvertFactory modelFactory) {
-        this.modelFactory = modelFactory;
+    public RowDataHandlerImpl(IConvertFactory<List<CanalEntry.Column>> convertFactory) {
+        this.convertFactory = convertFactory;
     }
 
     @Override
@@ -33,18 +33,18 @@ public class RowDataHandlerImpl implements RowDataHandler<CanalEntry.RowData> {
         }
         switch (eventType) {
             case INSERT:
-                R object = modelFactory.newInstance(entryListener, rowData.getAfterColumnsList());
+                R object = convertFactory.newInstance(entryListener, rowData.getAfterColumnsList());
                 entryListener.insert(object);
                 break;
             case UPDATE:
                 Set<String> updateColumnSet = rowData.getAfterColumnsList().stream().filter(CanalEntry.Column::getUpdated)
                         .map(CanalEntry.Column::getName).collect(Collectors.toSet());
-                R before = modelFactory.newInstance(entryListener, rowData.getBeforeColumnsList(), updateColumnSet);
-                R after = modelFactory.newInstance(entryListener, rowData.getAfterColumnsList());
+                R before = convertFactory.newInstance(entryListener, rowData.getBeforeColumnsList(), updateColumnSet);
+                R after = convertFactory.newInstance(entryListener, rowData.getAfterColumnsList());
                 entryListener.update(before, after);
                 break;
             case DELETE:
-                R o = modelFactory.newInstance(entryListener, rowData.getBeforeColumnsList());
+                R o = convertFactory.newInstance(entryListener, rowData.getBeforeColumnsList());
                 entryListener.delete(o);
                 break;
             default:

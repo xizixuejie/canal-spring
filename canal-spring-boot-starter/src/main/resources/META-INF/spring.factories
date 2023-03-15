@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.xzxj.canal.spring.autoconfigure.TcpClientAutoConfiguration
+io.xzxj.canal.spring.autoconfigure.TcpClientAutoConfiguration,\
+io.xzxj.canal.spring.autoconfigure.KafkaClientAutoConfiguration

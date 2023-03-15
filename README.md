@@ -27,7 +27,7 @@
 - [x] 实体类表名和表名自动转换
 - [ ] 跟据jpa或者mp注解自动转换实体类属性
 - [x] tcp模式
-- [ ] kafka模式
+- [x] kafka模式
 - [ ] rocketMQ模式
 - [ ] rabbitMQ模式
 - [ ] pulsarMQ模式
