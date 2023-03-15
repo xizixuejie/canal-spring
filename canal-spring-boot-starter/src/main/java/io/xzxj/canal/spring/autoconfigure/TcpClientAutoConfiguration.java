@@ -3,24 +3,30 @@ package io.xzxj.canal.spring.autoconfigure;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import io.xzxj.canal.core.client.TcpCanalClient;
 import io.xzxj.canal.core.factory.EntryColumnModelFactory;
-import io.xzxj.canal.core.handler.AbstractMessageHandler;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
+import io.xzxj.canal.core.handler.impl.AsyncMessageHandlerImpl;
 import io.xzxj.canal.core.handler.impl.RowDataHandlerImpl;
+import io.xzxj.canal.core.handler.impl.SyncMessageHandlerImpl;
 import io.xzxj.canal.core.listener.EntryListener;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author xzxj
  * @date 2023/3/11 11:37
  */
+@Configuration
 @EnableConfigurationProperties(CanalProperties.class)
-@ConditionalOnProperty(value = "canal.server-mode", havingValue = "tcp", matchIfMissing = true)
+@ConditionalOnProperty(value = "canal.server-mode", havingValue = "tcp")
+@Import(ThreadPoolAutoConfiguration.class)
 public class TcpClientAutoConfiguration {
 
     private final CanalProperties canalProperties;
@@ -30,9 +36,18 @@ public class TcpClientAutoConfiguration {
     }
 
     @Bean
-    public IMessageHandler messageHandler(List<EntryListener<?>>entryListenerList,
+    @ConditionalOnProperty(value = "canal.async", havingValue = "true")
+    public IMessageHandler messageHandler(List<EntryListener<?>> entryListenerList,
+                                          RowDataHandler<CanalEntry.RowData> rowDataHandler,
+                                          ExecutorService executorService) {
+        return new AsyncMessageHandlerImpl(entryListenerList, rowDataHandler, executorService);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "canal.async", havingValue = "false")
+    public IMessageHandler messageHandler(List<EntryListener<?>> entryListenerList,
                                           RowDataHandler<CanalEntry.RowData> rowDataHandler) {
-        return new AbstractMessageHandler(entryListenerList, rowDataHandler);
+        return new SyncMessageHandlerImpl(entryListenerList, rowDataHandler);
     }
 
     @Bean

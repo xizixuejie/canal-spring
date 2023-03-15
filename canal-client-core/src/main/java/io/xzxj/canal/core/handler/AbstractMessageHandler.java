@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
  * @author xzxj
  * @date 2023/3/11 11:25
  */
-public class AbstractMessageHandler implements IMessageHandler<Message> {
+public abstract class AbstractMessageHandler implements IMessageHandler<Message> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMessageHandler.class);
 
-    private Map<String, EntryListener<?>> entryListenerMap;
-    private RowDataHandler<CanalEntry.RowData> rowDataHandler;
+    private final Map<String, EntryListener<?>> entryListenerMap;
+    private final RowDataHandler<CanalEntry.RowData> rowDataHandler;
 
     public AbstractMessageHandler(List<EntryListener<?>> entryListenerList, RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         this.entryListenerMap = entryListenerList.stream()
@@ -30,7 +30,7 @@ public class AbstractMessageHandler implements IMessageHandler<Message> {
 
 
     @Override
-    public void handleMessage(Message message) throws Exception {
+    public void handleMessage(Message message) {
         List<CanalEntry.Entry> entries = message.getEntries();
         for (CanalEntry.Entry entry : entries) {
             if (!CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType())) {
@@ -45,8 +45,12 @@ public class AbstractMessageHandler implements IMessageHandler<Message> {
             }
             List<CanalEntry.RowData> rowDataList = rowChange.getRowDatasList();
             CanalEntry.EventType eventType = rowChange.getEventType();
-            for (CanalEntry.RowData rowData : rowDataList) {
-                rowDataHandler.handleRowData(rowData, entryListener, eventType);
+            try {
+                for (CanalEntry.RowData rowData : rowDataList) {
+                    rowDataHandler.handleRowData(rowData, entryListener, eventType);
+                }
+            } catch (Exception e) {
+                log.error("handle row data error", e);
             }
 
         }
