@@ -18,4 +18,7 @@ public @interface CanalListener {
      */
     String value() default "";
 
+
+    String name() default "";
+
 }

@@ -2,6 +2,7 @@ package io.xzxj.canal.spring.annotation;
 
 import io.xzxj.canal.spring.registrar.CanalListenerRegistrar;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -19,8 +20,10 @@ import java.lang.annotation.Target;
 @Import(CanalListenerRegistrar.class)
 public @interface EnableCanalListener {
 
+    @AliasFor("basePackages")
     String[] value() default {};
 
+    @AliasFor("value")
     String[] basePackages() default {};
 
 }
