@@ -37,6 +37,11 @@ public class TcpClientAutoConfiguration {
     }
 
     @Bean
+    public RowDataHandler<CanalEntry.RowData> rowDataHandler() {
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory());
+    }
+
+    @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
     public IMessageHandler<Message> asyncMessageHandler(List<EntryListener<?>> entryListenerList,
                                                         RowDataHandler<CanalEntry.RowData> rowDataHandler,
@@ -49,11 +54,6 @@ public class TcpClientAutoConfiguration {
     public IMessageHandler<Message> syncMessageHandler(List<EntryListener<?>> entryListenerList,
                                                        RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         return new SyncMessageHandlerImpl(entryListenerList, rowDataHandler);
-    }
-
-    @Bean
-    public RowDataHandler<CanalEntry.RowData> rowDataHandler() {
-        return new RowDataHandlerImpl(new EntryColumnConvertFactory());
     }
 
     @Bean(initMethod = "init", destroyMethod = "destroy")

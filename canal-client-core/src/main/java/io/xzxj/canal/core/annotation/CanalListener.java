@@ -21,7 +21,7 @@ public @interface CanalListener {
     /**
      * 订阅表名 默认取注解实体类注解的 TableName
      */
-    String value() default "";
+    String tableName() default "";
 
 
     /**

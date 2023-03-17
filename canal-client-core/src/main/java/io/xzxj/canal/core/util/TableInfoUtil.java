@@ -1,10 +1,13 @@
 package io.xzxj.canal.core.util;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.base.CaseFormat;
 import io.xzxj.canal.core.annotation.CanalListener;
 import io.xzxj.canal.core.listener.EntryListener;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.persistence.Table;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -25,14 +28,34 @@ public class TableInfoUtil {
         if (annotation == null) {
             return null;
         }
-        StringBuilder tableName = new StringBuilder();
+        StringBuilder fullName = new StringBuilder();
         if (StringUtils.isNotBlank(annotation.schemaName())) {
-            tableName.append(annotation.schemaName()).append(".");
+            fullName.append(annotation.schemaName()).append(".");
         }
-        if (StringUtils.isNotBlank(annotation.value())) {
-            tableName.append(annotation.value());
+        if (StringUtils.isNotBlank(annotation.tableName())) {
+            fullName.append(annotation.tableName());
+        }else {
+            String tableName = findTableName(entryListener);
+            fullName.append(tableName);
         }
-        return tableName.toString();
+        return fullName.toString();
+    }
+
+    @Nullable
+    private static String findTableName(EntryListener<?> entryListener) {
+        Class<Object> tableClass = getTableClass(entryListener);
+        if (tableClass == null) {
+            return null;
+        }
+        TableName tableName = tableClass.getAnnotation(TableName.class);
+        if (tableName != null && StringUtils.isNotBlank(tableName.value())) {
+            return tableName.value();
+        }
+        Table table = tableClass.getAnnotation(Table.class);
+        if (table != null && StringUtils.isNotBlank(table.name())) {
+            return table.name();
+        }
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, tableClass.getName());
     }
 
     /**

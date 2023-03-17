@@ -1,8 +1,12 @@
 package io.xzxj.canal.core.util;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import javax.persistence.Column;
 import java.beans.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -17,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class TableFieldUtil {
 
-    private static Map<Class<?>, Map<String, String>> TABLE_FILED_CACHE_MAP = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Map<String, String>> TABLE_FILED_CACHE_MAP = new ConcurrentHashMap<>();
 
     /**
      * 获取字段名称和实体属性的对应关系
@@ -29,8 +33,8 @@ public class TableFieldUtil {
         Map<String, String> map = TABLE_FILED_CACHE_MAP.get(clazz);
         if (map == null) {
             List<Field> fields = FieldUtils.getAllFieldsList(clazz);
-            //如果实体类中存在column 注解，则使用column注解的名称为字段名
-            map = fields.stream().filter(TableFieldUtil::notTransient)
+            //如果实体类中存在column 注解，则使用注解的名称为字段名
+            map = fields.stream().filter(TableFieldUtil::tableColumnFiled)
                     .filter(field -> !Modifier.isStatic(field.getModifiers()))
                     .collect(Collectors.toMap(TableFieldUtil::getColumnName, Field::getName));
             TABLE_FILED_CACHE_MAP.putIfAbsent(clazz, map);
@@ -38,34 +42,43 @@ public class TableFieldUtil {
         return map;
     }
 
-    /**
-     * TODO: mybatis或jpa注解
-     * @param field
-     * @return
-     */
     private static String getColumnName(Field field) {
-        //Column annotation = field.getAnnotation(Column.class);
-        //return annotation != null ? annotation.name() : CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
+        TableId tableId = field.getAnnotation(TableId.class);
+        if (tableId != null && StringUtils.isNotBlank(tableId.value())) {
+            return tableId.value();
+        }
+        TableField tableField = field.getAnnotation(TableField.class);
+        if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
+            return tableField.value();
+        }
+        Column column = field.getAnnotation(Column.class);
+        if (column != null && StringUtils.isNotBlank(column.name())) {
+            return column.name();
+        }
+        return defaultColumnName(field);
+    }
+
+    private static String defaultColumnName(Field field) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
 
-    private static boolean notTransient(Field field) {
+    private static boolean tableColumnFiled(Field field) {
+        TableField tableField = field.getAnnotation(TableField.class);
         Transient annotation = field.getAnnotation(Transient.class);
-        return annotation == null;
+        return tableField == null || tableField.exist() || annotation == null;
     }
-
 
     public static <R> void setFieldValue(R object, String fieldName, String value) throws NoSuchFieldException, IllegalAccessException {
         Field field;
-        try{
+        try {
             field = object.getClass().getDeclaredField(fieldName);
-        }catch (NoSuchFieldException e){
+        } catch (NoSuchFieldException e) {
             field = object.getClass().getSuperclass().getDeclaredField(fieldName);
         }
         field.setAccessible(true);
         Class<?> type = field.getType();
         Object result = StringConvertUtil.convertType(type, value);
-        field.set(object,result);
+        field.set(object, result);
     }
 
 }

@@ -18,10 +18,10 @@ public class AsyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
 
     private final ExecutorService executor;
 
-    public AsyncFlatMessageHandlerImpl(List<EntryListener<?>> entryHandlers,
+    public AsyncFlatMessageHandlerImpl(List<EntryListener<?>> entryListenerList,
                                        RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                        ExecutorService executor) {
-        super(entryHandlers, rowDataHandler);
+        super(entryListenerList, rowDataHandler);
         this.executor = executor;
     }
 

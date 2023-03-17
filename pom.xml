@@ -21,6 +21,7 @@
 
         <spring-boot.version>2.6.7</spring-boot.version>
         <canal.vesion>1.1.6</canal.vesion>
+        <mybatis-plus.vesion>3.5.3</mybatis-plus.vesion>
     </properties>
 
     <dependencyManagement>
@@ -41,6 +42,11 @@
                 <groupId>com.alibaba.otter</groupId>
                 <artifactId>canal.protocol</artifactId>
                 <version>${canal.vesion}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis-plus.vesion}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

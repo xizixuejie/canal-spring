@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutorService;
 @Import(ThreadPoolAutoConfiguration.class)
 public class KafkaClientAutoConfiguration {
 
-
     private final CanalProperties canalProperties;
 
     public KafkaClientAutoConfiguration(CanalProperties canalProperties) {
@@ -56,7 +55,6 @@ public class KafkaClientAutoConfiguration {
                                                                List<EntryListener<?>> entryHandlers) {
         return new SyncFlatMessageHandlerImpl(entryHandlers, rowDataHandler);
     }
-
 
     @Bean(initMethod = "init", destroyMethod = "destroy")
     public KafkaCanalClient kafkaCanalClient(IMessageHandler<FlatMessage> messageHandler) {

@@ -13,8 +13,8 @@ import java.util.Map;
  */
 public class SyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
 
-    public SyncFlatMessageHandlerImpl(List<EntryListener<?>> entryHandlers, RowDataHandler<List<Map<String, String>>> rowDataHandler) {
-        super(entryHandlers, rowDataHandler);
+    public SyncFlatMessageHandlerImpl(List<EntryListener<?>> entryListenerList, RowDataHandler<List<Map<String, String>>> rowDataHandler) {
+        super(entryListenerList, rowDataHandler);
     }
 
 }

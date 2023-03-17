@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * @author xzxj
  * @date 2023/3/11 13:53
  */
-@CanalListener(schemaName = "demo", value = "t_test")
+@CanalListener
 public class TestListener implements EntryListener<TestEntity> {
 
     private static final Logger log = LoggerFactory.getLogger(TestListener.class);
