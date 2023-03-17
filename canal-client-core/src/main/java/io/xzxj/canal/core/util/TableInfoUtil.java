@@ -2,6 +2,7 @@ package io.xzxj.canal.core.util;
 
 import io.xzxj.canal.core.annotation.CanalListener;
 import io.xzxj.canal.core.listener.EntryListener;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
@@ -20,11 +21,18 @@ public class TableInfoUtil {
 
     @Nullable
     public static String getTableName(EntryListener<?> entryListener) {
-        CanalListener canalTable = entryListener.getClass().getAnnotation(CanalListener.class);
-        if (canalTable != null) {
-            return canalTable.value();
+        CanalListener annotation = entryListener.getClass().getAnnotation(CanalListener.class);
+        if (annotation == null) {
+            return null;
         }
-        return null;
+        StringBuilder tableName = new StringBuilder();
+        if (StringUtils.isNotBlank(annotation.schemaName())) {
+            tableName.append(annotation.schemaName()).append(".");
+        }
+        if (StringUtils.isNotBlank(annotation.value())) {
+            tableName.append(annotation.value());
+        }
+        return tableName.toString();
     }
 
     /**

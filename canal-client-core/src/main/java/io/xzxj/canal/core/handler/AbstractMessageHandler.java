@@ -36,7 +36,16 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
             if (!CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType())) {
                 continue;
             }
-            EntryListener<?> entryListener = entryListenerMap.get(entry.getHeader().getTableName());
+            String schemaName = entry.getHeader().getSchemaName();
+            String tableName = entry.getHeader().getTableName();
+
+            // 先带数据库名字找EntryListener
+            EntryListener<?> entryListener = entryListenerMap.get(schemaName + "." + tableName);
+            if (entryListener == null) {
+                // 如果没有找到 只用表名找EntryListener
+                entryListener = entryListenerMap.get(tableName);
+            }
+
             CanalEntry.RowChange rowChange;
             try {
                 rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
@@ -47,7 +56,9 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
             CanalEntry.EventType eventType = rowChange.getEventType();
             try {
                 for (CanalEntry.RowData rowData : rowDataList) {
-                    rowDataHandler.handleRowData(rowData, entryListener, eventType);
+                    if (entryListener != null) {
+                        rowDataHandler.handleRowData(rowData, entryListener, eventType);
+                    }
                 }
             } catch (Exception e) {
                 log.error("handle row data error", e);

@@ -46,8 +46,18 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
             } else {
                 maps = Stream.of(messageData.get(i)).collect(Collectors.toList());
             }
+
+            String schemaName = flatMessage.getDatabase();
+            String tableName = flatMessage.getTable();
+
+            // 先带数据库名字找EntryListener
+            EntryListener<?> entryListener = entryListenerMap.get(schemaName + "." + tableName);
+            if (entryListener == null) {
+                // 如果没有找到 只用表名找EntryListener
+                entryListener = entryListenerMap.get(tableName);
+            }
+
             try {
-                EntryListener<?> entryListener = entryListenerMap.get(flatMessage.getTable());
                 if (entryListener != null) {
                     rowDataHandler.handleRowData(maps, entryListener, eventType);
                 }

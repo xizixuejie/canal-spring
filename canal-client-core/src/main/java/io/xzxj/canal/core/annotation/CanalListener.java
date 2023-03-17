@@ -14,11 +14,19 @@ import java.lang.annotation.Target;
 public @interface CanalListener {
 
     /**
+     * 订阅数据库名
+     */
+    String schemaName() default "";
+
+    /**
      * 订阅表名 默认取注解实体类注解的 TableName
      */
     String value() default "";
 
 
+    /**
+     * spring bean name
+     */
     String name() default "";
 
 }
