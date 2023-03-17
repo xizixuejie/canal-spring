@@ -8,18 +8,24 @@
 
 0. 配置canal服务基本信息
 
-   ```yaml
-   canal:
-     server: 127.0.0.1:11111
-     destination: example
-   ```
+    ```yaml
+    canal:
+      server: 127.0.0.1:11111
+      destination: example
+    ```
 
 1. 在启动类添加注解 `@EnableCanalListener`
 
    `value`属性或者`basePackages` 属性指定扫描包路径。
 
 2. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
-3. 实现类上增加注解 `@CanalListener("${table_name}")` 。其中 `${table_name} ` 是你的表名字，接口泛型是对应的实体类。
+3. 实现类上增加注解 `@CanalListener(schemaName = "${database}",value = "${table_name}")` 
+
+   `${database}` 监听数据库名
+
+    `${table_name} ` 监听表名
+
+   接口泛型是对应的实体类
 4. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
 
 
