@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.1)
 
 # Canal-Spring
 
@@ -6,27 +6,38 @@
 
 ## 快速开始
 
-0. 配置canal服务基本信息
+1. 引入maven依赖
 
-    ```yaml
-    canal:
-      server: 127.0.0.1:11111
-      destination: example
-    ```
+```xml
+<dependency>
+    <groupId>io.github.xizixuejie</groupId>
+    <artifactId>canal-spring-boot-starter</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
 
-1. 在启动类添加注解 `@EnableCanalListener`
+2. 配置canal服务基本信息
 
-   `value`属性或者`basePackages` 属性指定扫描包路径。
+```yaml
+canal:
+  server: 127.0.0.1:11111
+  destination: example
+```
 
-2. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
-3. 实现类上增加注解 `@CanalListener(schemaName = "${database}",tableName = "${table_name}")` 
+3. 在启动类添加注解 `@EnableCanalListener`
 
-   `${database}` 监听数据库名
+`value`属性或者`basePackages` 属性指定扫描包路径。
 
-    `${table_name}` 监听表名
+4. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
 
-   接口泛型是对应的实体类
-4. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
+5. 实现类上增加注解 `@CanalListener(schemaName = "${database}",tableName = "${table_name}")` 
+
+    `${database}` 监听数据库名
+
+     `${table_name}` 监听表名
+
+    接口泛型是对应的实体类
+6. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
 
 
 
