@@ -1,4 +1,5 @@
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.1)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.1)
 
 # Canal-Spring
 
