@@ -9,25 +9,25 @@
 
 1. 引入maven依赖
 
-```xml
-<dependency>
-    <groupId>io.github.xizixuejie</groupId>
-    <artifactId>canal-spring-boot-starter</artifactId>
-    <version>0.0.1</version>
-</dependency>
-```
+   ```xml
+   <dependency>
+       <groupId>io.github.xizixuejie</groupId>
+       <artifactId>canal-spring-boot-starter</artifactId>
+       <version>0.0.1</version>
+   </dependency>
+   ```
 
 2. 配置canal服务基本信息
 
-```yaml
-canal:
-  server: 127.0.0.1:11111
-  destination: example
-```
+   ```yaml
+   canal:
+     server: 127.0.0.1:11111
+     destination: example
+   ```
 
 3. 在启动类添加注解 `@EnableCanalListener`
 
-`value`属性或者`basePackages` 属性指定扫描包路径。
+   `value`属性或者`basePackages` 属性指定扫描包路径。
 
 4. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
 
