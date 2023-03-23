@@ -67,7 +67,6 @@
 | canal.async           | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性      | true            |
 | canal.timeout         | 消费的时间间隔(s)                                | 1s              |
 | canal.server-mode     | canal 客户端类型,目前支持 tcp,kafka类型              | tcp             |
-| canal.destination     | canal 的instance 名称,kafka模式为topic 名称       | null            |
 | canal.username        | canal 的用户名                                | null            |
 | canal.password        | canal 的密码                                 | null            |
 | canal.kafka.group-id  | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端 | null            |
