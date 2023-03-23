@@ -38,6 +38,7 @@
      `${table_name}` 监听表名
 
     接口泛型是对应的实体类
+
 6. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
 
 
@@ -46,7 +47,7 @@
 
 打勾的是已实现的，未打勾的是以后会实现的
 
-- [x] 实体类表名和表名自动转换
+- [x] 实体类名自动转换表名
 - [x] 跟据jpa或者mp注解自动转换实体类属性
 - [x] tcp模式
 - [x] kafka模式
@@ -54,3 +55,27 @@
 - [ ] rabbitMQ模式
 - [ ] pulsarMQ模式
 
+
+
+## 配置说明
+
+| 属性                    | 描述                                        | 默认值             |
+|-----------------------|-------------------------------------------|-----------------|
+| canal.server          | canal服务地址，如果是Kafka模式为Kafka地址，多个地址以`,`分隔。  | 127.0.0.1:11111 |
+| canal.destination     | canal 的instance 名称,kafka模式为topic 名称       | example         |
+| canal.filter          | canal过滤的表名称，如配置则只订阅配置的表                   | ""              |
+| canal.async           | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性      | true            |
+| canal.timeout         | 消费的时间间隔(s)                                | 1s              |
+| canal.server-mode     | canal 客户端类型,目前支持 tcp,kafka类型              | tcp             |
+| canal.destination     | canal 的instance 名称,kafka模式为topic 名称       | null            |
+| canal.username        | canal 的用户名                                | null            |
+| canal.password        | canal 的密码                                 | null            |
+| canal.kafka.group-id  | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端 | null            |
+| canal.kafka.partition | kafka partition                           | null            |
+
+
+
+## 参考
+
+- [Canal](https://github.com/alibaba/canal)
+- [canal-client](https://github.com/NormanGyllenhaal/canal-client)
