@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.xizixuejie</groupId>
         <artifactId>canal-spring</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>canal-client-example</artifactId>
@@ -33,12 +33,17 @@
         <dependency>
             <groupId>io.github.xizixuejie</groupId>
             <artifactId>canal-spring-boot-starter</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
         <dependency>

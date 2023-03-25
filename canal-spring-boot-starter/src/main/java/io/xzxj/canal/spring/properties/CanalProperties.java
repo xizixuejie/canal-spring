@@ -36,6 +36,9 @@ public class CanalProperties {
     @NestedConfigurationProperty
     private CanalKafkaProperties kafka;
 
+    @NestedConfigurationProperty
+    private CanalRabbitMqProperties rabbitMq;
+
     public CanalServerMode getServerMode() {
         return serverMode;
     }
@@ -122,6 +125,14 @@ public class CanalProperties {
 
     public void setKafka(CanalKafkaProperties kafka) {
         this.kafka = kafka;
+    }
+
+    public CanalRabbitMqProperties getRabbitMq() {
+        return rabbitMq;
+    }
+
+    public void setRabbitMq(CanalRabbitMqProperties rabbitMq) {
+        this.rabbitMq = rabbitMq;
     }
 
 }

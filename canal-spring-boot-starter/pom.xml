@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.xizixuejie</groupId>
         <artifactId>canal-spring</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>canal-spring-boot-starter</artifactId>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>io.github.xizixuejie</groupId>
             <artifactId>canal-client-core</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
 
         <dependency>

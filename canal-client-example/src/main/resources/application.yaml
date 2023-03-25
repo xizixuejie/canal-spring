@@ -9,11 +9,24 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       enable-auto-commit: true
       auto-commit-interval: 100
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: canal
+    password: canal
+    virtual-host: canal
+    template:
+      exchange: canal_exchange
 
 canal:
-  server: ${spring.kafka.bootstrap-servers}
+  server: ${spring.rabbitmq.host}
   destination: sample-data
   async: true
-  server-mode: kafka
-  kafka:
-    groupId: sample-test-group
+  server-mode: rabbit_mq
+  # kafka:
+  #  groupId: sample-test-group
+  rabbit-mq:
+    username: ${spring.rabbitmq.username}
+    password: ${spring.rabbitmq.password}
+    virtual-host: ${spring.rabbitmq.virtual-host}
+
