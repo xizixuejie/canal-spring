@@ -66,7 +66,7 @@
 | canal.filter                   | canal过滤的表名称，如配置则只订阅配置的表                                                               | ""              |
 | canal.async                    | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性                                                  | true            |
 | canal.timeout                  | 消费的时间间隔(s)                                                                            | 1s              |
-| canal.server-mode              | canal 客户端类型,目前支持 tcp,kafka类型                                                          | tcp             |
+| canal.server-mode              | canal 客户端类型,目前支持 tcp,kafka,rocketMQ类型                                                 | tcp             |
 | canal.username                 | canal 的用户名                                                                            | null            |
 | canal.password                 | canal 的密码                                                                             | null            |
 | canal.kafka.group-id           | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
@@ -78,6 +78,13 @@
 | canal.rabbitMq.resourceOwnerId | 资源owner账号（主账号                                                                         | null            |
 | canal.rabbitMq.username        | rabbitMq username                                                                     | guest           |
 | canal.rabbitMq.password        | rabbitMq password                                                                     | guest           |
+
+
+
+## 更新记录
+
+- 2023-03-23 更新v0.0.1版本。实现了RabbitMQ类型客户端。
+- 2023-03-22 更新v0.0.1版本。实现指定库名、表名监听，实体类属性自动转换，tcp和kafka类型客户端。
 
 
 
