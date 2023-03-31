@@ -1,6 +1,7 @@
 package io.xzxj.canal.spring.autoconfigure;
 
 import com.alibaba.otter.canal.protocol.FlatMessage;
+import io.xzxj.canal.core.client.AbstractCanalClient;
 import io.xzxj.canal.core.client.RabbitMqCanalClient;
 import io.xzxj.canal.core.factory.MapConvertFactory;
 import io.xzxj.canal.core.handler.IMessageHandler;
@@ -11,6 +12,7 @@ import io.xzxj.canal.core.handler.impl.SyncFlatMessageHandlerImpl;
 import io.xzxj.canal.core.listener.EntryListener;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import io.xzxj.canal.spring.properties.CanalRabbitMqProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,12 +38,14 @@ public class RabbitMqClientAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(RowDataHandler.class)
     public RowDataHandler<List<Map<String, String>>> rowDataHandler() {
         return new MapRowDataHandlerImpl(new MapConvertFactory());
     }
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnMissingBean(IMessageHandler.class)
     public IMessageHandler<FlatMessage> asyncFlatMessageHandler(RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                                                 List<EntryListener<?>> entryListenerList,
                                                                 ExecutorService executorService) {
@@ -50,12 +54,14 @@ public class RabbitMqClientAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "false")
+    @ConditionalOnMissingBean(IMessageHandler.class)
     public IMessageHandler<FlatMessage> syncFlatMessageHandler(RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                                                List<EntryListener<?>> entryListenerList) {
         return new SyncFlatMessageHandlerImpl(entryListenerList, rowDataHandler);
     }
 
     @Bean(initMethod = "init", destroyMethod = "destroy")
+    @ConditionalOnMissingBean(AbstractCanalClient.class)
     public RabbitMqCanalClient rabbitMqCanalClient(IMessageHandler<FlatMessage> messageHandler) {
         CanalRabbitMqProperties mqProperties = canalProperties.getRabbitMq();
         return RabbitMqCanalClient.builder().servers(canalProperties.getServer())
