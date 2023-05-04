@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.2)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.3)
 
 # Canal-Spring
 
@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.2</version>
+       <version>0.0.3</version>
    </dependency>
    ```
 
@@ -35,7 +35,7 @@
 
     `${database}` 监听数据库名
 
-     `${table_name}` 监听表名
+     `${table_name}` 监听表名。可以是正则表达式
 
     接口泛型是对应的实体类
 
@@ -83,6 +83,7 @@
 
 ## 更新记录
 
+- 2023-05-04 更新v0.0.3版本。`@CanalListener` 注解的 `tableName` 属性可以用正则表达式。
 - 2023-03-25 更新v0.0.2版本。实现了RabbitMQ类型客户端。
 - 2023-03-22 更新v0.0.1版本。实现指定库名、表名监听，实体类属性自动转换，tcp和kafka类型客户端。
 

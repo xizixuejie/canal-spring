@@ -19,12 +19,12 @@ spring:
       exchange: canal_exchange
 
 canal:
-  server: ${spring.rabbitmq.host}
+  server: ${spring.kafka.bootstrap-servers}
   destination: sample-data
   async: true
-  server-mode: rabbit_mq
-  # kafka:
-  #  groupId: sample-test-group
+  server-mode: kafka
+  kafka:
+    groupId: sample-test-group
   rabbit-mq:
     username: ${spring.rabbitmq.username}
     password: ${spring.rabbitmq.password}

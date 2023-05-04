@@ -3,6 +3,7 @@ package io.xzxj.canal.core.handler;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.FlatMessage;
 import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.core.util.MapValueUtil;
 import io.xzxj.canal.core.util.TableInfoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,11 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
             if (entryListener == null) {
                 // 如果没有找到 只用表名找EntryListener
                 entryListener = entryListenerMap.get(tableName);
+            }
+
+            if (entryListener == null) {
+                // 如果没有找到  用正则表达式找EntryListener
+                entryListener = MapValueUtil.getValueByRegex(entryListenerMap, tableName);
             }
 
             try {
