@@ -26,18 +26,21 @@ public class KafkaCanalClient extends AbstractCanalClient {
     @Override
     public void handleListening() {
         KafkaCanalConnector kafkaCanalConnector = (KafkaCanalConnector) connector;
-        try {
-            while (runStatus) {
+        while (runStatus) {
+            try {
                 List<FlatMessage> messageList = kafkaCanalConnector.getFlatListWithoutAck(timeout, unit);
                 log.debug("receive message={}", messageList);
                 for (FlatMessage message : messageList) {
                     messageHandler.handleMessage(message);
                 }
                 kafkaCanalConnector.ack();
+            } catch (Exception e) {
+                log.error("canal 消费异常 回滚消息", e);
+                kafkaCanalConnector.rollback();
             }
-        } catch (Exception e) {
-            log.error("canal client exception", e);
         }
+        connector.unsubscribe();
+        connector.disconnect();
     }
 
 

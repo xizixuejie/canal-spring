@@ -20,19 +20,22 @@ public class RabbitMqCanalClient extends AbstractCanalClient {
 
     @Override
     public void handleListening() {
-        RabbitMQCanalConnector kafkaCanalConnector = (RabbitMQCanalConnector) connector;
-        try {
-            while (runStatus) {
-                List<FlatMessage> messageList = kafkaCanalConnector.getFlatListWithoutAck(timeout, unit);
+        RabbitMQCanalConnector mqCanalConnector = (RabbitMQCanalConnector) connector;
+        while (runStatus) {
+            try {
+                List<FlatMessage> messageList = mqCanalConnector.getFlatListWithoutAck(timeout, unit);
                 log.debug("receive message={}", messageList);
                 for (FlatMessage message : messageList) {
                     messageHandler.handleMessage(message);
                 }
-                kafkaCanalConnector.ack();
+                mqCanalConnector.ack();
+            } catch (Exception e) {
+                log.error("canal 消费异常 回滚消息", e);
+                mqCanalConnector.rollback();
             }
-        } catch (Exception e) {
-            log.error("canal client exception", e);
         }
+        connector.unsubscribe();
+        connector.disconnect();
     }
 
     public static Builder builder() {

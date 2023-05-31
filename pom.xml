@@ -6,7 +6,7 @@
 
     <groupId>io.github.xizixuejie</groupId>
     <artifactId>canal-spring</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
 
     <name>canal-spring</name>
@@ -175,5 +175,15 @@
             </distributionManagement>
         </profile>
     </profiles>
+    <distributionManagement>
+        <repository>
+            <id>le-maven-releases</id>
+            <url>https://dev.laiease.com:881/maven/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>le-maven-snapshots</id>
+            <url>https://dev.laiease.com:881/maven/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

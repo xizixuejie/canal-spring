@@ -21,19 +21,23 @@ public class TcpCanalClient extends AbstractCanalClient {
 
     @Override
     public void handleListening() {
-        try {
-            while (runStatus) {
+        while (runStatus) {
+            long batchId = 0L;
+            try {
                 Message message = connector.getWithoutAck(batchSize, timeout, unit);
                 log.debug("receive message={}", message);
-                long batchId = message.getId();
+                batchId = message.getId();
                 if (message.getId() != -1 && message.getEntries().size() != 0) {
                     messageHandler.handleMessage(message);
                 }
                 connector.ack(batchId);
+            } catch (Exception e) {
+                log.error("canal 消费异常 回滚消息", e);
+                connector.rollback(batchId);
             }
-        } catch (Exception e) {
-            log.error("canal client exception", e);
         }
+        connector.unsubscribe();
+        connector.disconnect();
     }
 
     public static Builder builder() {
