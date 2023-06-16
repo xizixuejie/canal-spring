@@ -175,15 +175,5 @@
             </distributionManagement>
         </profile>
     </profiles>
-    <distributionManagement>
-        <repository>
-            <id>le-maven-releases</id>
-            <url>https://dev.laiease.com:881/maven/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>le-maven-snapshots</id>
-            <url>https://dev.laiease.com:881/maven/repository/maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>
