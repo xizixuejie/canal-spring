@@ -8,13 +8,13 @@ import java.util.Map;
  */
 public class MapValueUtil {
 
-    public static <V> V getValueByRegex(Map<String, V> map, String tableName) {
+    public static <V> V getValueByRegex(Map<String, V> map, String key) {
         for (Map.Entry<String, V> entry : map.entrySet()) {
-            String key = entry.getKey();
-            if (key == null) {
+            String entryKey = entry.getKey();
+            if (entryKey == null) {
                 continue;
             }
-            if (tableName.matches(key)) {
+            if (key.matches(entryKey)) {
                 return entry.getValue();
             }
         }

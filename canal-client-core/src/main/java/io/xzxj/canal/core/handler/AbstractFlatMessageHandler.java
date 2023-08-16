@@ -3,8 +3,7 @@ package io.xzxj.canal.core.handler;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.FlatMessage;
 import io.xzxj.canal.core.listener.EntryListener;
-import io.xzxj.canal.core.util.MapValueUtil;
-import io.xzxj.canal.core.util.TableInfoUtil;
+import io.xzxj.canal.core.util.EntryListenerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +20,12 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFlatMessageHandler.class);
 
-    private final Map<String, EntryListener<?>> entryListenerMap;
+    private final List<EntryListener<?>> entryListenerList;
     private final RowDataHandler<List<Map<String, String>>> rowDataHandler;
 
     public AbstractFlatMessageHandler(List<EntryListener<?>> entryListenerList,
                                       RowDataHandler<List<Map<String, String>>> rowDataHandler) {
-        this.entryListenerMap = entryListenerList.stream()
-                .collect(Collectors.toMap(TableInfoUtil::getTableName, v -> v, (v1, v2) -> v1));
+        this.entryListenerList = entryListenerList;
         this.rowDataHandler = rowDataHandler;
     }
 
@@ -51,17 +49,7 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
             String schemaName = flatMessage.getDatabase();
             String tableName = flatMessage.getTable();
 
-            // 先带数据库名字找EntryListener
-            EntryListener<?> entryListener = entryListenerMap.get(schemaName + "." + tableName);
-            if (entryListener == null) {
-                // 如果没有找到 只用表名找EntryListener
-                entryListener = entryListenerMap.get(tableName);
-            }
-
-            if (entryListener == null) {
-                // 如果没有找到  用正则表达式找EntryListener
-                entryListener = MapValueUtil.getValueByRegex(entryListenerMap, tableName);
-            }
+            EntryListener<?> entryListener = EntryListenerUtil.findEntryListener(entryListenerList, schemaName, tableName);
 
             try {
                 if (entryListener != null) {

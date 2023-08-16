@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.xizixuejie</groupId>
         <artifactId>canal-spring</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
 
     <artifactId>canal-client-example</artifactId>
@@ -23,17 +23,15 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.6</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.xizixuejie</groupId>
             <artifactId>canal-spring-boot-starter</artifactId>
-            <version>0.0.4</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

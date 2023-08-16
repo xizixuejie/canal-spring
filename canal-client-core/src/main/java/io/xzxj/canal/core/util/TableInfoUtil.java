@@ -22,6 +22,7 @@ public class TableInfoUtil {
     private static Map<Class<? extends EntryListener>, Class>
             CLASS_LISTENER_CACHE_MAP = new ConcurrentHashMap<>();
 
+    @Deprecated
     @Nullable
     public static String getTableName(EntryListener<?> entryListener) {
         CanalListener annotation = entryListener.getClass().getAnnotation(CanalListener.class);
@@ -29,12 +30,13 @@ public class TableInfoUtil {
             return null;
         }
         StringBuilder fullName = new StringBuilder();
-        if (StringUtils.isNotBlank(annotation.schemaName())) {
-            fullName.append(annotation.schemaName()).append(".");
+        String schemaName = annotation.schemaName().length != 0 ? annotation.schemaName()[0] : null;
+        if (StringUtils.isNotBlank(schemaName)) {
+            fullName.append(schemaName).append(".");
         }
         if (StringUtils.isNotBlank(annotation.tableName())) {
             fullName.append(annotation.tableName());
-        }else {
+        } else {
             String tableName = findTableName(entryListener);
             fullName.append(tableName);
         }
@@ -42,7 +44,7 @@ public class TableInfoUtil {
     }
 
     @Nullable
-    private static String findTableName(EntryListener<?> entryListener) {
+    public static String findTableName(EntryListener<?> entryListener) {
         Class<Object> tableClass = getTableClass(entryListener);
         if (tableClass == null) {
             return null;

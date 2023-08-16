@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/xizixuejie/canal-spring/blob/master/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.4)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xizixuejie/canal-spring.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.xizixuejie/canal-spring/0.0.5)
 
 # Canal-Spring
 
@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.4</version>
+       <version>0.0.5</version>
    </dependency>
    ```
 
@@ -31,7 +31,7 @@
 
 4. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
 
-5. 实现类上增加注解 `@CanalListener(schemaName = "${database}",tableName = "${table_name}")` 
+5. 实现类上增加注解 `@CanalListener(schemaName = "${database}", tableName = "${table_name}")` 
 
     `${database}` 监听数据库名
 
@@ -59,30 +59,31 @@
 
 ## 配置说明
 
-| 属性                             | 描述                                                                                    | 默认值             |
-|--------------------------------|---------------------------------------------------------------------------------------|-----------------|
-| canal.server                   | canal服务地址<br />如果是Kafka模式为Kafka地址，多个地址以`,`分隔。<br />如果是rabbitMQ模式为rabbitMQ服务地址，目前只支持单个 | 127.0.0.1:11111 |
-| canal.destination              | canal 的instance 名称<br />kafka模式为topic 名称<br />rabbitMQ模式为queue名称                      | example         |
-| canal.filter                   | canal过滤的表名称，如配置则只订阅配置的表                                                               | ""              |
-| canal.async                    | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性                                                  | true            |
-| canal.timeout                  | 消费的时间间隔(s)                                                                            | 1s              |
-| canal.server-mode              | canal 客户端类型,目前支持 tcp,kafka,rabbitMQ类型                                                 | tcp             |
-| canal.username                 | canal 的用户名                                                                            | null            |
-| canal.password                 | canal 的密码                                                                             | null            |
-| canal.kafka.group-id           | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
-| canal.kafka.partition          | kafka partition                                                                       | null            |
-| canal.rabbitMq.virtualHost     | rabbitMq  virtualHost                                                                 | /               |
-| canal.rabbitMq.queueName       | rabbitMq 队列名                                                                          | null            |
-| canal.rabbitMq.accessKey       | 阿里的ak                                                                                 | ""              |
-| canal.rabbitMq.secretKey       | 阿里的sk                                                                                 | ""              |
-| canal.rabbitMq.resourceOwnerId | 资源owner账号（主账号                                                                         | null            |
-| canal.rabbitMq.username        | rabbitMq username                                                                     | guest           |
-| canal.rabbitMq.password        | rabbitMq password                                                                     | guest           |
+| 属性                                | 描述                                                                                    | 默认值             |
+|-----------------------------------|---------------------------------------------------------------------------------------|-----------------|
+| canal.server                      | canal服务地址<br />如果是Kafka模式为Kafka地址，多个地址以`,`分隔。<br />如果是rabbitMQ模式为rabbitMQ服务地址，目前只支持单个 | 127.0.0.1:11111 |
+| canal.destination                 | canal 的instance 名称<br />kafka模式为topic 名称<br />rabbitMQ模式为queue名称                      | example         |
+| canal.filter                      | canal过滤的表名称，如配置则只订阅配置的表                                                               | ""              |
+| canal.async                       | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性                                                  | true            |
+| canal.timeout                     | 消费的时间间隔(s)                                                                            | 1s              |
+| canal.server-mode                 | canal 客户端类型,目前支持 tcp,kafka,rabbitMQ类型                                                 | tcp             |
+| canal.username                    | canal 的用户名                                                                            | null            |
+| canal.password                    | canal 的密码                                                                             | null            |
+| canal.kafka.group-id              | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
+| canal.kafka.partition             | kafka partition                                                                       | null            |
+| canal.rabbit-mq.virtual-host      | rabbitMq  virtualHost                                                                 | /               |
+| canal.rabbit-mq.queue-name        | rabbitMq 队列名                                                                          | null            |
+| canal.rabbit-mq.access-key        | 阿里的ak                                                                                 | ""              |
+| canal.rabbit-mq.secret-key        | 阿里的sk                                                                                 | ""              |
+| canal.rabbit-mq.resource-owner-id | 资源owner账号（主账号                                                                         | null            |
+| canal.rabbit-mq.username          | rabbitMq username                                                                     | guest           |
+| canal.rabbit-mq.password          | rabbitMq password                                                                     | guest           |
 
 
 
 ## 更新记录
 
+- 2023-08-16 更新v0.0.5版本。`@CanalListener` 注解的 `schemaName` 属性可以指定多个，也可以使用正则表达。
 - 2023-05-31 更新v0.0.4版本。修改消费消息异常处理。
 - 2023-05-04 更新v0.0.3版本。`@CanalListener` 注解的 `tableName` 属性可以用正则表达式。
 - 2023-03-25 更新v0.0.2版本。实现了RabbitMQ类型客户端。
