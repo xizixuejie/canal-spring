@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
  * @date 2023/3/11 11:37
  */
 @EnableConfigurationProperties(CanalProperties.class)
-@ConditionalOnProperty(value = "canal.server-mode", havingValue = "tcp")
+@ConditionalOnProperty(value = "canal.server-mode", havingValue = "tcp", matchIfMissing = true)
 @Import(ThreadPoolAutoConfiguration.class)
 public class TcpClientAutoConfiguration {
 
