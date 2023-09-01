@@ -1,10 +1,12 @@
 package io.xzxj.canal.core.util;
 
+import com.alibaba.fastjson2.JSON;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author xzxj
@@ -37,6 +39,8 @@ public class StringConvertUtil {
             return Float.parseFloat(columnValue);
         } else if (type.equals(Date.class)) {
             return parseDate(columnValue);
+        } else if (type.equals(List.class)) {
+            return str2List(columnValue);
         } else {
             return type.equals(java.sql.Date.class) ? parseSqlDate(columnValue) : columnValue;
         }
@@ -69,6 +73,10 @@ public class StringConvertUtil {
 
     private static boolean convertToBoolean(String value) {
         return "1".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value);
+    }
+
+    private static List<String> str2List(String value) {
+        return JSON.parseArray(value, String.class);
     }
 
 }
