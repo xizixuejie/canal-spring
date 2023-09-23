@@ -54,7 +54,11 @@ public class EntryListenerUtil {
             for (String schemaName : schemaNames) {
                 Map<String, EntryListener<?>> map = new HashMap<>();
                 map.put(tableName, entryListener);
-                entryListenerMap.put(schemaName, map);
+                if (entryListenerMap.containsKey(schemaName)){
+                    entryListenerMap.get(schemaName).putAll(map);
+                }else {
+                    entryListenerMap.put(schemaName, map);
+                }
             }
         }
         entryListenerMap.put(DEFAULT_KEY, defaultMap);
