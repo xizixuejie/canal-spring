@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.6</version>
+       <version>0.0.7</version>
    </dependency>
    ```
 
@@ -83,6 +83,7 @@
 
 ## 更新记录
 
+- 2023-09-25 v0.0.7 优化定义多个同库不同表Listener导致只能获取到最后一个Listener信息的问题。
 - 2023-09-01 v0.0.6 增加List字段转换，修改了默认tcp模式自动配置不生效的问题。
 - 2023-08-16 更新v0.0.5版本。`@CanalListener` 注解的 `schemaName` 属性可以指定多个，也可以使用正则表达。
 - 2023-05-31 更新v0.0.4版本。修改消费消息异常处理。
