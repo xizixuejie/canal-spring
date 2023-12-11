@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +36,14 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
         if (messageData == null || messageData.isEmpty()) {
             return;
         }
+
+        String schemaName = flatMessage.getDatabase();
+        String tableName = flatMessage.getTable();
+        EntryListener<?> entryListener = EntryListenerUtil.findEntryListener(entryListenerList, schemaName, tableName);
+        if (Objects.isNull(entryListener)) {
+            return;
+        }
+
         for (int i = 0; i < messageData.size(); i++) {
             CanalEntry.EventType eventType = CanalEntry.EventType.valueOf(flatMessage.getType());
             List<Map<String, String>> maps;
@@ -45,16 +54,8 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
             } else {
                 maps = Stream.of(messageData.get(i)).collect(Collectors.toList());
             }
-
-            String schemaName = flatMessage.getDatabase();
-            String tableName = flatMessage.getTable();
-
-            EntryListener<?> entryListener = EntryListenerUtil.findEntryListener(entryListenerList, schemaName, tableName);
-
             try {
-                if (entryListener != null) {
-                    rowDataHandler.handleRowData(maps, entryListener, eventType);
-                }
+                rowDataHandler.handleRowData(maps, entryListener, eventType);
             } catch (Exception e) {
                 throw new RuntimeException("parse event has an error , data:" + messageData, e);
             }
