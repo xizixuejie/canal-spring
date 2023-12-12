@@ -69,6 +69,7 @@
 | canal.server-mode                 | canal 客户端类型,目前支持 tcp,kafka,rabbitMQ类型                                                 | tcp             |
 | canal.username                    | canal 的用户名                                                                            | null            |
 | canal.password                    | canal 的密码                                                                             | null            |
+| canal.mq.flat-message             | JSON 消息格式                                                                             | true            |
 | canal.kafka.group-id              | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
 | canal.kafka.partition             | kafka partition                                                                       | null            |
 | canal.rabbit-mq.virtual-host      | rabbitMq  virtualHost                                                                 | /               |
