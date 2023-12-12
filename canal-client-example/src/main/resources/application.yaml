@@ -23,6 +23,8 @@ canal:
   destination: sample-data
   async: true
   server-mode: kafka
+  mq:
+    flat-message: true
   kafka:
     groupId: sample-test-group
   rabbit-mq:
