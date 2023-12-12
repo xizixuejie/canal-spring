@@ -45,15 +45,15 @@ public class TableFieldUtil {
     private static String getColumnName(Field field) {
         TableId tableId = field.getAnnotation(TableId.class);
         if (tableId != null && StringUtils.isNotBlank(tableId.value())) {
-            return tableId.value();
+            return StringUtils.remove(tableId.value(), "`");
         }
         TableField tableField = field.getAnnotation(TableField.class);
         if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
-            return tableField.value();
+            return StringUtils.remove(tableField.value(), "`");
         }
         Column column = field.getAnnotation(Column.class);
         if (column != null && StringUtils.isNotBlank(column.name())) {
-            return column.name();
+            return StringUtils.remove(column.name(), "`");
         }
         return defaultColumnName(field);
     }
