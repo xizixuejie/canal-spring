@@ -1,17 +1,20 @@
 package io.xzxj.canal.spring.autoconfigure;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.FlatMessage;
-import io.xzxj.canal.core.client.AbstractCanalClient;
+import com.alibaba.otter.canal.protocol.Message;
+import io.xzxj.canal.core.client.AbstractMqCanalClient;
 import io.xzxj.canal.core.client.RabbitMqCanalClient;
+import io.xzxj.canal.core.factory.EntryColumnConvertFactory;
 import io.xzxj.canal.core.factory.MapConvertFactory;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
-import io.xzxj.canal.core.handler.impl.AsyncFlatMessageHandlerImpl;
-import io.xzxj.canal.core.handler.impl.MapRowDataHandlerImpl;
-import io.xzxj.canal.core.handler.impl.SyncFlatMessageHandlerImpl;
+import io.xzxj.canal.core.handler.impl.*;
 import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.spring.properties.CanalMqProperties;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import io.xzxj.canal.spring.properties.CanalRabbitMqProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,6 +23,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -37,15 +41,39 @@ public class RabbitMqClientAutoConfiguration {
         this.canalProperties = canalProperties;
     }
 
-    @Bean
+    @Bean("rowDataHandler")
     @ConditionalOnMissingBean(RowDataHandler.class)
-    public RowDataHandler<List<Map<String, String>>> rowDataHandler() {
+    @ConditionalOnProperty(value = "canal.mq.flat-message", havingValue = "false")
+    public RowDataHandler<CanalEntry.RowData> messageRowDataHandler() {
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IMessageHandler.class)
+    @ConditionalOnExpression("${canal.async:true} and ${canal.mq.flat-message:true} == false")
+    public IMessageHandler<Message> asyncMessageHandler(RowDataHandler<CanalEntry.RowData> rowDataHandler,
+                                                        List<EntryListener<?>> entryHandlers,
+                                                        ExecutorService executorService) {
+        return new AsyncMessageHandlerImpl(entryHandlers, rowDataHandler, executorService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IMessageHandler.class)
+    @ConditionalOnExpression("${canal.async:true} == false and ${canal.mq.flat-message:true} == false")
+    public IMessageHandler<Message> syncMessageHandler(RowDataHandler<CanalEntry.RowData> rowDataHandler,
+                                                       List<EntryListener<?>> entryHandlers) {
+        return new SyncMessageHandlerImpl(entryHandlers, rowDataHandler);
+    }
+
+    @Bean("rowDataHandler")
+    @ConditionalOnMissingBean(RowDataHandler.class)
+    @ConditionalOnProperty(value = "canal.mq.flat-message", havingValue = "true", matchIfMissing = true)
+    public RowDataHandler<List<Map<String, String>>> flatMessageRowDataHandler() {
         return new MapRowDataHandlerImpl(new MapConvertFactory());
     }
 
     @Bean
-    @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnMissingBean(IMessageHandler.class)
+    @ConditionalOnExpression("${canal.async:true} and ${canal.mq.flat-message:true}")
     public IMessageHandler<FlatMessage> asyncFlatMessageHandler(RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                                                 List<EntryListener<?>> entryListenerList,
                                                                 ExecutorService executorService) {
@@ -53,16 +81,17 @@ public class RabbitMqClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "canal.async", havingValue = "false")
     @ConditionalOnMissingBean(IMessageHandler.class)
+    @ConditionalOnExpression("${canal.async:true} == false and ${canal.mq.flat-message:true}")
     public IMessageHandler<FlatMessage> syncFlatMessageHandler(RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                                                List<EntryListener<?>> entryListenerList) {
         return new SyncFlatMessageHandlerImpl(entryListenerList, rowDataHandler);
     }
 
     @Bean(initMethod = "init", destroyMethod = "destroy")
-    @ConditionalOnMissingBean(AbstractCanalClient.class)
-    public RabbitMqCanalClient rabbitMqCanalClient(IMessageHandler<FlatMessage> messageHandler) {
+    @ConditionalOnMissingBean(AbstractMqCanalClient.class)
+    public RabbitMqCanalClient rabbitMqCanalClient(IMessageHandler<?> messageHandler) {
+        Optional<CanalMqProperties> mqPropertiesOpt = Optional.ofNullable(canalProperties.getMq());
         CanalRabbitMqProperties mqProperties = canalProperties.getRabbitMq();
         return RabbitMqCanalClient.builder().servers(canalProperties.getServer())
                 .virtualHost(mqProperties.getVirtualHost())
@@ -77,6 +106,7 @@ public class RabbitMqClientAutoConfiguration {
                 .filter(canalProperties.getFilter())
                 .timeout(canalProperties.getTimeout())
                 .unit(canalProperties.getUnit())
+                .flatMessage(mqPropertiesOpt.map(CanalMqProperties::getFlatMessage).orElse(Boolean.TRUE))
                 .build();
     }
 

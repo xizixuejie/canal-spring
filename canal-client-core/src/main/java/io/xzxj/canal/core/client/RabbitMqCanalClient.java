@@ -1,41 +1,24 @@
 package io.xzxj.canal.core.client;
 
 import com.alibaba.otter.canal.client.rabbitmq.RabbitMQCanalConnector;
-import com.alibaba.otter.canal.protocol.FlatMessage;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author xzxj
  * @date 2023/3/24 9:23
  */
-public class RabbitMqCanalClient extends AbstractCanalClient {
+public class RabbitMqCanalClient extends AbstractMqCanalClient {
 
     private static final Logger log = LoggerFactory.getLogger(RabbitMqCanalClient.class);
 
     @Override
     public void handleListening() {
-        RabbitMQCanalConnector mqCanalConnector = (RabbitMQCanalConnector) connector;
-        while (runStatus) {
-            try {
-                List<FlatMessage> messageList = mqCanalConnector.getFlatListWithoutAck(timeout, unit);
-                log.debug("receive message={}", messageList);
-                for (FlatMessage message : messageList) {
-                    messageHandler.handleMessage(message);
-                }
-                mqCanalConnector.ack();
-            } catch (Exception e) {
-                log.error("canal 消费异常 回滚消息", e);
-                mqCanalConnector.rollback();
-            }
-        }
-        connector.unsubscribe();
-        connector.disconnect();
+        handleListening(flatMessage);
     }
 
     public static Builder builder() {
@@ -66,6 +49,8 @@ public class RabbitMqCanalClient extends AbstractCanalClient {
         private TimeUnit unit = TimeUnit.SECONDS;
 
         private Integer batchSize = 1;
+
+        private Boolean flatMessage = Boolean.TRUE;
 
         private IMessageHandler<?> messageHandler;
 
@@ -132,6 +117,11 @@ public class RabbitMqCanalClient extends AbstractCanalClient {
             return this;
         }
 
+        public Builder flatMessage(Boolean flatMessage) {
+            this.flatMessage = flatMessage;
+            return this;
+        }
+
         public Builder messageHandler(IMessageHandler<?> messageHandler) {
             this.messageHandler = messageHandler;
             return this;
@@ -140,7 +130,7 @@ public class RabbitMqCanalClient extends AbstractCanalClient {
         public RabbitMqCanalClient build() {
             RabbitMQCanalConnector connector = new RabbitMQCanalConnector(servers, virtualHost, queueName,
                     accessKey, secretKey, username, password,
-                    resourceOwnerId, true);
+                    resourceOwnerId, flatMessage);
             RabbitMqCanalClient rabbitMqCanalClient = new RabbitMqCanalClient();
             rabbitMqCanalClient.messageHandler = messageHandler;
             rabbitMqCanalClient.connector = connector;
@@ -148,6 +138,7 @@ public class RabbitMqCanalClient extends AbstractCanalClient {
             rabbitMqCanalClient.unit = this.unit;
             rabbitMqCanalClient.batchSize = this.batchSize;
             rabbitMqCanalClient.timeout = this.timeout;
+            rabbitMqCanalClient.flatMessage = this.flatMessage;
             return rabbitMqCanalClient;
         }
 

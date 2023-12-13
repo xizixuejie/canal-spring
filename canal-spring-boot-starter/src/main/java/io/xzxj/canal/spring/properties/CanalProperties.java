@@ -34,6 +34,9 @@ public class CanalProperties {
     private TimeUnit unit = TimeUnit.SECONDS;
 
     @NestedConfigurationProperty
+    private CanalMqProperties mq;
+
+    @NestedConfigurationProperty
     private CanalKafkaProperties kafka;
 
     @NestedConfigurationProperty
@@ -117,6 +120,14 @@ public class CanalProperties {
 
     public void setUnit(TimeUnit unit) {
         this.unit = unit;
+    }
+
+    public CanalMqProperties getMq() {
+        return mq;
+    }
+
+    public void setMq(CanalMqProperties mq) {
+        this.mq = mq;
     }
 
     public CanalKafkaProperties getKafka() {

@@ -1,20 +1,18 @@
 package io.xzxj.canal.core.client;
 
 import com.alibaba.otter.canal.client.kafka.KafkaCanalConnector;
-import com.alibaba.otter.canal.protocol.FlatMessage;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author xzxj
  * @date 2023/3/15 13:36
  */
-public class KafkaCanalClient extends AbstractCanalClient {
+public class KafkaCanalClient extends AbstractMqCanalClient {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaCanalClient.class);
 
@@ -25,24 +23,8 @@ public class KafkaCanalClient extends AbstractCanalClient {
 
     @Override
     public void handleListening() {
-        KafkaCanalConnector kafkaCanalConnector = (KafkaCanalConnector) connector;
-        while (runStatus) {
-            try {
-                List<FlatMessage> messageList = kafkaCanalConnector.getFlatListWithoutAck(timeout, unit);
-                log.debug("receive message={}", messageList);
-                for (FlatMessage message : messageList) {
-                    messageHandler.handleMessage(message);
-                }
-                kafkaCanalConnector.ack();
-            } catch (Exception e) {
-                log.error("canal 消费异常 回滚消息", e);
-                kafkaCanalConnector.rollback();
-            }
-        }
-        connector.unsubscribe();
-        connector.disconnect();
+        handleListening(flatMessage);
     }
-
 
     public static Builder builder() {
         return new Builder();
@@ -57,6 +39,7 @@ public class KafkaCanalClient extends AbstractCanalClient {
         private String topic;
         private Integer partition;
         private String groupId;
+        private Boolean flatMessage = Boolean.TRUE;
         private IMessageHandler<?> messageHandler;
 
         private Builder() {
@@ -102,13 +85,18 @@ public class KafkaCanalClient extends AbstractCanalClient {
             return this;
         }
 
+        public Builder flatMessage(Boolean flatMessage) {
+            this.flatMessage = flatMessage;
+            return this;
+        }
+
         public Builder messageHandler(IMessageHandler<?> messageHandler) {
             this.messageHandler = messageHandler;
             return this;
         }
 
         public KafkaCanalClient build() {
-            KafkaCanalConnector connector = new KafkaCanalConnector(servers, topic, partition, groupId, batchSize, true);
+            KafkaCanalConnector connector = new KafkaCanalConnector(servers, topic, partition, groupId, batchSize, flatMessage);
             KafkaCanalClient kafkaCanalClient = new KafkaCanalClient();
             kafkaCanalClient.messageHandler = messageHandler;
             kafkaCanalClient.connector = connector;
@@ -116,6 +104,7 @@ public class KafkaCanalClient extends AbstractCanalClient {
             kafkaCanalClient.unit = this.unit;
             kafkaCanalClient.batchSize = this.batchSize;
             kafkaCanalClient.timeout = this.timeout;
+            kafkaCanalClient.flatMessage = this.flatMessage;
             return kafkaCanalClient;
         }
     }
