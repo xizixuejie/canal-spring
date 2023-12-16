@@ -62,6 +62,7 @@
 | 属性                                | 描述                                                                                    | 默认值             |
 |-----------------------------------|---------------------------------------------------------------------------------------|-----------------|
 | canal.server                      | canal服务地址<br />如果是Kafka模式为Kafka地址，多个地址以`,`分隔。<br />如果是rabbitMQ模式为rabbitMQ服务地址，目前只支持单个 | 127.0.0.1:11111 |
+| canal.annotation-type             | 选择实体类上的注解类型                                                                           | mybatis_plus    |
 | canal.destination                 | canal 的instance 名称<br />kafka模式为topic 名称<br />rabbitMQ模式为queue名称                      | example         |
 | canal.filter                      | canal过滤的表名称，如配置则只订阅配置的表                                                               | ""              |
 | canal.async                       | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性                                                  | true            |
