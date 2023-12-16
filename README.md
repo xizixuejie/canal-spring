@@ -48,12 +48,24 @@
 打勾的是已实现的，未打勾的是以后会实现的
 
 - [x] 实体类名自动转换表名
-- [x] 跟据jpa或者mp注解自动转换实体类属性
+- [x] 跟据jpa或者mp注解自动转换实体类属性，或者其他orm框架的注解（需要自定义）
 - [x] tcp模式
 - [x] kafka模式
 - [ ] rocketMQ模式
 - [x] rabbitMQ模式
 - [ ] pulsarMQ模式
+
+
+
+### 自定义实体类属性列名字转换
+
+如果你用的orm框架不是mybatis-plus或者spring-data-jpa，可以自定义一个转换器。
+
+1. 自定义bean 继承 `io.xzxj.canal.core.metadata.AbstractEntityInfoHelper` 
+2. 实现抽象类中的三个方法
+   - 获取数据库表名 `getTableName`
+   - 是否为数据库列 `isColumnFiled`
+   - 获取对应的数据库列名 `getColumn`
 
 
 
