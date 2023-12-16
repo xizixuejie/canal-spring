@@ -4,13 +4,14 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
 import io.xzxj.canal.core.client.AbstractCanalClient;
 import io.xzxj.canal.core.client.TcpCanalClient;
+import io.xzxj.canal.core.context.EntryListenerContext;
 import io.xzxj.canal.core.factory.EntryColumnConvertFactory;
 import io.xzxj.canal.core.handler.IMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
 import io.xzxj.canal.core.handler.impl.AsyncMessageHandlerImpl;
 import io.xzxj.canal.core.handler.impl.RowDataHandlerImpl;
 import io.xzxj.canal.core.handler.impl.SyncMessageHandlerImpl;
-import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,7 +19,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
  */
 @EnableConfigurationProperties(CanalProperties.class)
 @ConditionalOnProperty(value = "canal.server-mode", havingValue = "tcp", matchIfMissing = true)
-@Import(ThreadPoolAutoConfiguration.class)
+@Import({ThreadPoolAutoConfiguration.class, CanalAutoConfiguration.class})
 public class TcpClientAutoConfiguration {
 
     private final CanalProperties canalProperties;
@@ -38,25 +38,25 @@ public class TcpClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RowDataHandler.class)
-    public RowDataHandler<CanalEntry.RowData> rowDataHandler() {
-        return new RowDataHandlerImpl(new EntryColumnConvertFactory());
+    public RowDataHandler<CanalEntry.RowData> rowDataHandler(AbstractEntityInfoHelper entityInfoHelper) {
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory(entityInfoHelper));
     }
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(IMessageHandler.class)
-    public IMessageHandler<Message> asyncMessageHandler(List<EntryListener<?>> entryListenerList,
+    public IMessageHandler<Message> asyncMessageHandler(EntryListenerContext entryListenerContext,
                                                         RowDataHandler<CanalEntry.RowData> rowDataHandler,
                                                         ExecutorService executorService) {
-        return new AsyncMessageHandlerImpl(entryListenerList, rowDataHandler, executorService);
+        return new AsyncMessageHandlerImpl(entryListenerContext, rowDataHandler, executorService);
     }
 
     @Bean
     @ConditionalOnProperty(value = "canal.async", havingValue = "false")
     @ConditionalOnMissingBean(IMessageHandler.class)
-    public IMessageHandler<Message> syncMessageHandler(List<EntryListener<?>> entryListenerList,
+    public IMessageHandler<Message> syncMessageHandler(EntryListenerContext entryListenerContext,
                                                        RowDataHandler<CanalEntry.RowData> rowDataHandler) {
-        return new SyncMessageHandlerImpl(entryListenerList, rowDataHandler);
+        return new SyncMessageHandlerImpl(entryListenerContext, rowDataHandler);
     }
 
     @Bean(initMethod = "init", destroyMethod = "destroy")

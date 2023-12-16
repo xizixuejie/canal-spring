@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author xzxj
  * @date 2023/3/11 16:19
+ * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper}
  */
 public class TableInfoUtil {
 

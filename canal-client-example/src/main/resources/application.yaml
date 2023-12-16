@@ -1,6 +1,9 @@
+server:
+  port: 9000
+
 spring:
   kafka:
-    bootstrap-servers: 10.13.14.222:9092,10.13.14.222:9093
+    bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -20,7 +23,7 @@ spring:
 
 canal:
   server: ${spring.kafka.bootstrap-servers}
-  destination: sample-data
+  destination: example
   async: true
   server-mode: kafka
   mq:
@@ -31,4 +34,5 @@ canal:
     username: ${spring.rabbitmq.username}
     password: ${spring.rabbitmq.password}
     virtual-host: ${spring.rabbitmq.virtual-host}
+  annotation-type: hibernate
 

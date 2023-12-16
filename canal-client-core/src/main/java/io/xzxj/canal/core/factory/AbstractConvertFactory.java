@@ -1,7 +1,7 @@
 package io.xzxj.canal.core.factory;
 
 import io.xzxj.canal.core.listener.EntryListener;
-import io.xzxj.canal.core.util.TableInfoUtil;
+import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
 
 /**
  * @author xzxj
@@ -9,9 +9,15 @@ import io.xzxj.canal.core.util.TableInfoUtil;
  */
 public abstract class AbstractConvertFactory<T> implements IConvertFactory<T> {
 
+    protected final AbstractEntityInfoHelper entityInfoHelper;
+
+    public AbstractConvertFactory(AbstractEntityInfoHelper entityInfoHelper) {
+        this.entityInfoHelper = entityInfoHelper;
+    }
+
     @Override
     public <R> R newInstance(EntryListener<?> entryListener, T t) throws Exception {
-        Class<R> tableClass = TableInfoUtil.getTableClass(entryListener);
+        Class<R> tableClass = entityInfoHelper.getTableClass(entryListener);
         if (tableClass != null) {
             return newInstance(tableClass, t);
         }

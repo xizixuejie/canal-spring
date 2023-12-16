@@ -1,6 +1,7 @@
 package io.xzxj.canal.spring.properties;
 
 import io.xzxj.canal.spring.enums.CanalServerMode;
+import io.xzxj.canal.spring.enums.OrmAnnotationType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class CanalProperties {
 
     private CanalServerMode serverMode = CanalServerMode.TCP;
+
+    private OrmAnnotationType annotationType = OrmAnnotationType.MYBATIS_PLUS;
 
     private Boolean async = true;
 
@@ -48,6 +51,14 @@ public class CanalProperties {
 
     public void setServerMode(CanalServerMode serverMode) {
         this.serverMode = serverMode;
+    }
+
+    public OrmAnnotationType getAnnotationType() {
+        return annotationType;
+    }
+
+    public void setAnnotationType(OrmAnnotationType annotationType) {
+        this.annotationType = annotationType;
     }
 
     public Boolean getAsync() {

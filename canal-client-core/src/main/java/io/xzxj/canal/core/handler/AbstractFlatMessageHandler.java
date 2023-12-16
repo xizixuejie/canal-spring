@@ -2,8 +2,8 @@ package io.xzxj.canal.core.handler;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.FlatMessage;
+import io.xzxj.canal.core.context.EntryListenerContext;
 import io.xzxj.canal.core.listener.EntryListener;
-import io.xzxj.canal.core.util.EntryListenerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +21,12 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFlatMessageHandler.class);
 
-    private final List<EntryListener<?>> entryListenerList;
+    private final EntryListenerContext entryListenerContext;
     private final RowDataHandler<List<Map<String, String>>> rowDataHandler;
 
-    public AbstractFlatMessageHandler(List<EntryListener<?>> entryListenerList,
+    public AbstractFlatMessageHandler(EntryListenerContext entryListenerContext,
                                       RowDataHandler<List<Map<String, String>>> rowDataHandler) {
-        this.entryListenerList = entryListenerList;
+        this.entryListenerContext = entryListenerContext;
         this.rowDataHandler = rowDataHandler;
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
 
         String schemaName = flatMessage.getDatabase();
         String tableName = flatMessage.getTable();
-        EntryListener<?> entryListener = EntryListenerUtil.findEntryListener(entryListenerList, schemaName, tableName);
+        EntryListener<?> entryListener = entryListenerContext.findEntryListener(schemaName, tableName);
         if (Objects.isNull(entryListener)) {
             return;
         }

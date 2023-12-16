@@ -1,8 +1,8 @@
 package io.xzxj.canal.core.handler.impl;
 
+import io.xzxj.canal.core.context.EntryListenerContext;
 import io.xzxj.canal.core.handler.AbstractFlatMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
-import io.xzxj.canal.core.listener.EntryListener;
 
 import java.util.List;
 import java.util.Map;
@@ -13,8 +13,8 @@ import java.util.Map;
  */
 public class SyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
 
-    public SyncFlatMessageHandlerImpl(List<EntryListener<?>> entryListenerList, RowDataHandler<List<Map<String, String>>> rowDataHandler) {
-        super(entryListenerList, rowDataHandler);
+    public SyncFlatMessageHandlerImpl(EntryListenerContext entryListenerContext, RowDataHandler<List<Map<String, String>>> rowDataHandler) {
+        super(entryListenerContext, rowDataHandler);
     }
 
 }

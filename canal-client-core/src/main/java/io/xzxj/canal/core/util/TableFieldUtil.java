@@ -28,6 +28,7 @@ public class TableFieldUtil {
      *
      * @param clazz
      * @return
+     * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#getFieldMap(Class)}
      */
     public static Map<String, String> getFieldMap(Class<?> clazz) {
         Map<String, String> map = TABLE_FILED_CACHE_MAP.get(clazz);
@@ -42,6 +43,12 @@ public class TableFieldUtil {
         return map;
     }
 
+    /**
+     *
+     * @param field
+     * @return
+     * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#getColumn(Field)}
+     */
     private static String getColumnName(Field field) {
         TableId tableId = field.getAnnotation(TableId.class);
         if (tableId != null && StringUtils.isNotBlank(tableId.value())) {
@@ -62,6 +69,12 @@ public class TableFieldUtil {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
 
+    /**
+     *
+     * @param field
+     * @return
+     * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#isColumnFiled(Field)}
+     */
     private static boolean tableColumnFiled(Field field) {
         TableField tableField = field.getAnnotation(TableField.class);
         Transient annotation = field.getAnnotation(Transient.class);

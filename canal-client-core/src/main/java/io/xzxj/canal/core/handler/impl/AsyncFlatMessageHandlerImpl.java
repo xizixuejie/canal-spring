@@ -1,9 +1,9 @@
 package io.xzxj.canal.core.handler.impl;
 
 import com.alibaba.otter.canal.protocol.FlatMessage;
+import io.xzxj.canal.core.context.EntryListenerContext;
 import io.xzxj.canal.core.handler.AbstractFlatMessageHandler;
 import io.xzxj.canal.core.handler.RowDataHandler;
-import io.xzxj.canal.core.listener.EntryListener;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +18,10 @@ public class AsyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
 
     private final ExecutorService executor;
 
-    public AsyncFlatMessageHandlerImpl(List<EntryListener<?>> entryListenerList,
+    public AsyncFlatMessageHandlerImpl(EntryListenerContext entryListenerContext,
                                        RowDataHandler<List<Map<String, String>>> rowDataHandler,
                                        ExecutorService executor) {
-        super(entryListenerList, rowDataHandler);
+        super(entryListenerContext, rowDataHandler);
         this.executor = executor;
     }
 

@@ -1,42 +1,43 @@
-package io.xzxj.canal.core.util;
+package io.xzxj.canal.core.context;
 
 import io.xzxj.canal.core.annotation.CanalListener;
 import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
+import io.xzxj.canal.core.util.MapValueUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author xzxj
- * @date 2023/8/16 11:54
- * @deprecated {@link io.xzxj.canal.core.context.EntryListenerContext}
- */
-public class EntryListenerUtil {
+public final class EntryListenerContext {
 
     public static final String DEFAULT_KEY = "DEFAULT";
 
-    private static Map<String, Map<String, EntryListener<?>>> entryListenerMap;
+    private static final Map<String, Map<String, EntryListener<?>>> ENTRY_LISTENER_MAP = new ConcurrentHashMap<>();
+
+    private final AbstractEntityInfoHelper entityInfoHelper;
+
+    public EntryListenerContext(AbstractEntityInfoHelper entityInfoHelper,
+                                List<EntryListener<?>> entryListenerList) {
+        this.entityInfoHelper = entityInfoHelper;
+        this.initEntryListenerMap(entryListenerList);
+    }
 
     @Nullable
-    public static EntryListener<?> findEntryListener(List<EntryListener<?>> entryListenerList, String schemaName, String tableName) {
-        if (entryListenerMap == null) {
-            initEntryListenerMap(entryListenerList);
-        }
+    public EntryListener<?> findEntryListener(String schemaName, String tableName) {
         // 先根据数据库名找对应的 Map<String, EntryListener>
-        Map<String, EntryListener<?>> listenerMap = MapValueUtil.getValueByRegex(entryListenerMap, schemaName);
+        Map<String, EntryListener<?>> listenerMap = MapValueUtil.getValueByRegex(ENTRY_LISTENER_MAP, schemaName);
         if (listenerMap == null) {
-            listenerMap = MapValueUtil.getValueByRegex(entryListenerMap, EntryListenerUtil.DEFAULT_KEY);
+            listenerMap = MapValueUtil.getValueByRegex(ENTRY_LISTENER_MAP, DEFAULT_KEY);
         }
-
         // 再根据表名找对应的 EntryListener
         return listenerMap != null ? MapValueUtil.getValueByRegex(listenerMap, tableName) : null;
     }
 
-    private static void initEntryListenerMap(List<EntryListener<?>> entryListenerList) {
-        entryListenerMap = new HashMap<>();
+    private void initEntryListenerMap(List<EntryListener<?>> entryListenerList) {
         Map<String, EntryListener<?>> defaultMap = new HashMap<>();
         for (EntryListener<?> entryListener : entryListenerList) {
             CanalListener annotation = entryListener.getClass().getAnnotation(CanalListener.class);
@@ -46,7 +47,7 @@ public class EntryListenerUtil {
             String[] schemaNames = annotation.schemaName();
             String tableName = annotation.tableName();
             if (StringUtils.isBlank(tableName)) {
-                tableName = TableInfoUtil.findTableName(entryListener);
+                tableName = entityInfoHelper.getTableName(entryListener);
             }
             if (schemaNames.length == 0) {
                 defaultMap.put(tableName, entryListener);
@@ -55,14 +56,14 @@ public class EntryListenerUtil {
             for (String schemaName : schemaNames) {
                 Map<String, EntryListener<?>> map = new HashMap<>();
                 map.put(tableName, entryListener);
-                if (entryListenerMap.containsKey(schemaName)){
-                    entryListenerMap.get(schemaName).putAll(map);
-                }else {
-                    entryListenerMap.put(schemaName, map);
+                if (ENTRY_LISTENER_MAP.containsKey(schemaName)) {
+                    ENTRY_LISTENER_MAP.get(schemaName).putAll(map);
+                } else {
+                    ENTRY_LISTENER_MAP.put(schemaName, map);
                 }
             }
         }
-        entryListenerMap.put(DEFAULT_KEY, defaultMap);
+        ENTRY_LISTENER_MAP.put(DEFAULT_KEY, defaultMap);
     }
 
 }

@@ -1,5 +1,6 @@
 package io.xzxj.canal.core.client;
 
+import com.alibaba.fastjson2.JSONException;
 import com.alibaba.otter.canal.client.CanalMQConnector;
 import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.alibaba.otter.canal.protocol.Message;
@@ -14,7 +15,7 @@ import java.util.List;
  * @date 2023/12/12 21:25
  */
 public abstract class AbstractMqCanalClient extends AbstractCanalClient {
-    private static final Logger log = LoggerFactory.getLogger(AbstractCanalClient.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractMqCanalClient.class);
 
     protected Boolean flatMessage = Boolean.TRUE;
 
@@ -44,6 +45,8 @@ public abstract class AbstractMqCanalClient extends AbstractCanalClient {
                 messageHandler.handleMessage(message);
             }
             mqConnector.ack();
+        } catch (JSONException e) {
+            log.error("canal 消息json解析异常", e);
         } catch (Exception e) {
             log.error("canal 消费异常 回滚消息", e);
             connector.rollback();
@@ -59,6 +62,8 @@ public abstract class AbstractMqCanalClient extends AbstractCanalClient {
                 messageHandler.handleMessage(message);
             }
             mqConnector.ack();
+        } catch (JSONException e) {
+            log.error("canal 消息json解析异常", e);
         } catch (Exception e) {
             log.error("canal 消费异常 回滚消息", e);
             connector.rollback();
