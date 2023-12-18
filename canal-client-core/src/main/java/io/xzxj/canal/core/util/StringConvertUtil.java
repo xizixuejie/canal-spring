@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * @author xzxj
  * @date 2023/3/12 12:21
+ * @deprecated see {@link io.xzxj.canal.core.convertor.IColumnConvertor}
  */
 public class StringConvertUtil {
 

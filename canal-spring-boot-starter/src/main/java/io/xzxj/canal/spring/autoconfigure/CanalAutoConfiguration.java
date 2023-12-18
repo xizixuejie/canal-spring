@@ -1,6 +1,8 @@
 package io.xzxj.canal.spring.autoconfigure;
 
+import io.xzxj.canal.core.config.CanalEntityConvertConfig;
 import io.xzxj.canal.core.context.EntryListenerContext;
+import io.xzxj.canal.core.convertor.IColumnConvertor;
 import io.xzxj.canal.core.listener.EntryListener;
 import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
 import io.xzxj.canal.core.metadata.JpaEntityInfoHelper;
@@ -31,6 +33,13 @@ public class CanalAutoConfiguration {
     public EntryListenerContext entryListenerContext(AbstractEntityInfoHelper entityInfoHelper,
                                                      List<EntryListener<?>> entryListenerList) {
         return new EntryListenerContext(entityInfoHelper, entryListenerList);
+    }
+
+    @Bean
+    public CanalEntityConvertConfig canalEntityConvertConfig(List<IColumnConvertor<?>> columnConvertorList) {
+        CanalEntityConvertConfig instance = CanalEntityConvertConfig.getInstance();
+        instance.putAllColumnConvertor(columnConvertorList);
+        return instance;
     }
 
 }

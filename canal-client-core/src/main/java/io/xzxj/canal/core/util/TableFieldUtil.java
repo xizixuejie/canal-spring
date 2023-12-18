@@ -3,8 +3,12 @@ package io.xzxj.canal.core.util;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.google.common.base.CaseFormat;
+import io.xzxj.canal.core.config.CanalEntityConvertConfig;
+import io.xzxj.canal.core.convertor.IColumnConvertor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import java.beans.Transient;
@@ -20,6 +24,8 @@ import java.util.stream.Collectors;
  * @date 2023/3/12 12:16
  */
 public class TableFieldUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(TableFieldUtil.class);
 
     private static final Map<Class<?>, Map<String, String>> TABLE_FILED_CACHE_MAP = new ConcurrentHashMap<>();
 
@@ -44,10 +50,9 @@ public class TableFieldUtil {
     }
 
     /**
-     *
      * @param field
      * @return
-     * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#getColumn(Field)}
+     * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#getColumnName(Field)}
      */
     private static String getColumnName(Field field) {
         TableId tableId = field.getAnnotation(TableId.class);
@@ -70,7 +75,6 @@ public class TableFieldUtil {
     }
 
     /**
-     *
      * @param field
      * @return
      * @deprecated see {@link io.xzxj.canal.core.metadata.AbstractEntityInfoHelper#isColumnFiled(Field)}
@@ -89,9 +93,31 @@ public class TableFieldUtil {
             field = object.getClass().getSuperclass().getDeclaredField(fieldName);
         }
         field.setAccessible(true);
-        Class<?> type = field.getType();
-        Object result = StringConvertUtil.convertType(type, value);
+        Object result = convertType(field.getType(), value);
         field.set(object, result);
+    }
+
+    /**
+     * 转换属性类型
+     *
+     * @param type  字段类型class
+     * @param value 属性值
+     * @return 转换后的类型
+     */
+    static Object convertType(Class<?> type, String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        if (String.class.equals(type)) {
+            return value;
+        }
+        String typeName = type.getCanonicalName();
+        IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().columnConvertorMap.get(typeName);
+        if (convertor == null) {
+            log.warn("类型: {}没有找到对应的转换类", typeName);
+            return value;
+        }
+        return convertor.convert(value);
     }
 
 }

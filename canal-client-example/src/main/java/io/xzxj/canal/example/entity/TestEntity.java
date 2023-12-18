@@ -26,4 +26,6 @@ public class TestEntity {
     @Column(name = "f_gender")
     private Integer gender;
 
+    private byte[] annex;
+
 }
