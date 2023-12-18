@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import java.beans.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,7 +94,7 @@ public class TableFieldUtil {
             field = object.getClass().getSuperclass().getDeclaredField(fieldName);
         }
         field.setAccessible(true);
-        Object result = convertType(field.getType(), value);
+        Object result = convertType(field.getGenericType(), value);
         field.set(object, result);
     }
 
@@ -104,14 +105,14 @@ public class TableFieldUtil {
      * @param value 属性值
      * @return 转换后的类型
      */
-    static Object convertType(Class<?> type, String value) {
+    static Object convertType(Type type, String value) {
         if (value == null || value.isEmpty()) {
             return value;
         }
         if (String.class.equals(type)) {
             return value;
         }
-        String typeName = type.getCanonicalName();
+        String typeName = type.getTypeName();
         IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().columnConvertorMap.get(typeName);
         if (convertor == null) {
             log.warn("类型: {}没有找到对应的转换类", typeName);
