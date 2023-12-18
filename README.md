@@ -67,6 +67,13 @@
    - 是否为数据库列 `isColumnFiled`
    - 获取对应的数据库列名 `getColumn`
 
+### 自定义实体类属性类型转换
+
+如果你的实体类属性不在 `io.xzxj.canal.core.convertor.impl` 这个包里实现，可以自定义类型转换器。
+
+1. 自定义bean实现 `io.xzxj.canal.core.convertor.IColumnConvertor<T>` ，泛型是你实体类的类型。
+2. 实现 `convert` 方法
+
 
 
 ## 配置说明
