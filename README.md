@@ -43,6 +43,33 @@
 
 
 
+### 示例代码
+
+```java
+@CanalListener
+public class TestListener implements EntryListener<TestEntity> {
+    private static final Logger log = LoggerFactory.getLogger(TestListener.class);
+
+    @Override
+    public void insert(TestEntity testEntity) {
+        log.info("insert={}", testEntity);
+    }
+
+    @Override
+    public void update(TestEntity before, TestEntity after) {
+        log.info("update before={}", before);
+        log.info("update after={}", after);
+    }
+
+    @Override
+    public void delete(TestEntity testEntity) {
+        log.info("delete={}", testEntity);
+    }
+}
+```
+
+
+
 ## 功能
 
 打勾的是已实现的，未打勾的是以后会实现的
