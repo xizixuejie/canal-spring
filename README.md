@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.8</version>
+       <version>0.0.9</version>
    </dependency>
    ```
 
@@ -104,6 +104,7 @@
 
 ## 更新记录
 
+- 2023-12-18 v0.0.9 允许自定义实体类属性名称和类型转换。
 - 2023-12-13 v0.0.8 优化Listener处理过程；mq模式配置flat-message。
 - 2023-09-25 v0.0.7 优化定义多个同库不同表Listener导致只能获取到最后一个Listener信息的问题。
 - 2023-09-01 v0.0.6 增加List字段转换，修改了默认tcp模式自动配置不生效的问题。
