@@ -12,6 +12,7 @@ import io.xzxj.canal.core.convertor.impl.LongColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.SqlDateColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.StringListColumnConvertor;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public final class CanalEntityConvertConfig {
      * 属性类型转换器map
      * key: 全类名; value: 类型转换器实现
      */
-    public final Map<String, IColumnConvertor<?>> columnConvertorMap = new ConcurrentHashMap<>();
+    private final Map<String, IColumnConvertor<?>> columnConvertorMap = new ConcurrentHashMap<>();
 
     private CanalEntityConvertConfig() {
         this.initDatePatterns();
@@ -117,6 +118,11 @@ public final class CanalEntityConvertConfig {
                 columnConvertorMap.put(typeName, convertor);
             }
         }
+    }
+
+    @Nullable
+    public IColumnConvertor<?> getColumnConvertor(String typeName) {
+        return this.columnConvertorMap.get(typeName);
     }
 
 }

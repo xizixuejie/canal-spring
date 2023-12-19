@@ -113,7 +113,7 @@ public class TableFieldUtil {
             return value;
         }
         String typeName = type.getTypeName();
-        IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().columnConvertorMap.get(typeName);
+        IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().getColumnConvertor(typeName);
         if (convertor == null) {
             log.warn("类型: {}没有找到对应的转换类", typeName);
             return value;
