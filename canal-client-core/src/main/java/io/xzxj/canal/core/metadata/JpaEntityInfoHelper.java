@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Optional;
 
 public final class JpaEntityInfoHelper extends AbstractEntityInfoHelper {
 
@@ -25,20 +25,18 @@ public final class JpaEntityInfoHelper extends AbstractEntityInfoHelper {
 
     @Override
     public boolean isColumnFiled(Field field) {
-        AnnotatedElement element = this.filedGetMethod(field);
-        if (element == null) {
-            element = field;
-        }
-        return element.getAnnotation(Transient.class) == null;
+        Transient annotation = Optional.ofNullable(this.filedGetMethod(field))
+                .map(m -> m.getAnnotation(Transient.class))
+                .orElse(field.getAnnotation(Transient.class));
+        return annotation == null;
     }
 
     @Override
     protected String getColumn(Field field) {
-        AnnotatedElement element = this.filedGetMethod(field);
-        if (element == null) {
-            element = field;
-        }
-        Column column = element.getAnnotation(Column.class);
+        Column column = Optional.ofNullable(this.filedGetMethod(field))
+                .map(m -> m.getAnnotation(Column.class))
+                .orElse(field.getAnnotation(Column.class));
+
         if (column != null && StringUtils.isNotBlank(column.name())) {
             return StringUtils.remove(column.name(), "`");
         }
