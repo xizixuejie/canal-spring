@@ -3,6 +3,7 @@ package io.xzxj.canal.core.util;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.google.common.base.CaseFormat;
+import io.xzxj.canal.core.annotation.ColumnConvertor;
 import io.xzxj.canal.core.config.CanalEntityConvertConfig;
 import io.xzxj.canal.core.convertor.IColumnConvertor;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import java.beans.Transient;
 import java.lang.reflect.Field;
@@ -94,6 +96,19 @@ public class TableFieldUtil {
             field = object.getClass().getSuperclass().getDeclaredField(fieldName);
         }
         field.setAccessible(true);
+
+        if (value == null || value.isEmpty()) {
+            field.set(object, value);
+            return;
+        }
+
+        ColumnConvertor annotation = field.getAnnotation(ColumnConvertor.class);
+        if (annotation != null) {
+            IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().getColumnConvertorByAnnotation(annotation);
+            Object result = convertor.convert(value);
+            field.set(object, result);
+            return;
+        }
         Object result = convertType(field.getGenericType(), value);
         field.set(object, result);
     }
@@ -105,10 +120,7 @@ public class TableFieldUtil {
      * @param value 属性值
      * @return 转换后的类型
      */
-    static Object convertType(Type type, String value) {
-        if (value == null || value.isEmpty()) {
-            return value;
-        }
+    static Object convertType(Type type, @Nonnull String value) {
         if (String.class.equals(type)) {
             return value;
         }

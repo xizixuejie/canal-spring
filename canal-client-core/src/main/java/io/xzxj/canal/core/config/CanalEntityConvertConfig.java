@@ -1,5 +1,6 @@
 package io.xzxj.canal.core.config;
 
+import io.xzxj.canal.core.annotation.ColumnConvertor;
 import io.xzxj.canal.core.convertor.IColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.BigDecimalColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.BooleanColumnConvertor;
@@ -11,6 +12,7 @@ import io.xzxj.canal.core.convertor.impl.IntegerColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.LongColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.SqlDateColumnConvertor;
 import io.xzxj.canal.core.convertor.impl.StringListColumnConvertor;
+import org.springframework.cglib.core.ReflectUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
@@ -38,6 +40,7 @@ public final class CanalEntityConvertConfig {
      * key: 全类名; value: 类型转换器实现
      */
     private final Map<String, IColumnConvertor<?>> columnConvertorMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, IColumnConvertor<?>> annotationColumnConvertorMap = new ConcurrentHashMap<>();
 
     private CanalEntityConvertConfig() {
         this.initDatePatterns();
@@ -118,6 +121,16 @@ public final class CanalEntityConvertConfig {
                 columnConvertorMap.put(typeName, convertor);
             }
         }
+    }
+
+    public IColumnConvertor<?> getColumnConvertorByAnnotation(ColumnConvertor annotation) {
+        Class<? extends IColumnConvertor<?>> clazz = annotation.value();
+        IColumnConvertor<?> convertor = annotationColumnConvertorMap.get(clazz);
+        if (convertor == null) {
+            convertor = (IColumnConvertor<?>) ReflectUtils.newInstance(clazz);
+            annotationColumnConvertorMap.put(clazz, convertor);
+        }
+        return convertor;
     }
 
     @Nullable
