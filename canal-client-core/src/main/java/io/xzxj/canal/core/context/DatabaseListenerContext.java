@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static io.xzxj.canal.core.context.EntryListenerContext.DEFAULT_KEY;
-
 /**
  * 存放数据库名，表名和EntryListener的对应关系的容器
  */
@@ -36,6 +34,12 @@ public final class DatabaseListenerContext {
      */
     private final Map<String, TableListenerMap> map = new HashMap<>();
 
+    public static final String DEFAULT_DATABASE_NAME = "DEFAULT";
+
+    public void put(String tableName, EntryListener<?> listener) {
+        this.put(DEFAULT_DATABASE_NAME, tableName, listener);
+    }
+
     public void put(String dbName, String tableName, EntryListener<?> listener) {
         TableListenerMap dbListeners = map.getOrDefault(dbName, new TableListenerMap());
         dbListeners.put(tableName, listener);
@@ -47,7 +51,7 @@ public final class DatabaseListenerContext {
         TableListenerMap dbListeners = map.get(dbName);
         if (dbListeners == null) {
             // 如果没有查询到，查询默认的数据库名字的 EntryListener
-            dbListeners = map.get(DEFAULT_KEY);
+            dbListeners = map.get(DEFAULT_DATABASE_NAME);
         }
         if (dbListeners == null) {
             return new ArrayList<>();

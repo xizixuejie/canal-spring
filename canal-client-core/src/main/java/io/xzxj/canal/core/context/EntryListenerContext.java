@@ -9,8 +9,6 @@ import java.util.List;
 
 public final class EntryListenerContext {
 
-    public static final String DEFAULT_KEY = "DEFAULT";
-
     private final DatabaseListenerContext databaseListenerContext = DatabaseListenerContext.getInstance();
 
     private final AbstractEntityInfoHelper entityInfoHelper;
@@ -37,7 +35,7 @@ public final class EntryListenerContext {
                 tableName = entityInfoHelper.getTableName(entryListener);
             }
             if (schemaNames.length == 0) {
-                databaseListenerContext.put(DEFAULT_KEY, tableName, entryListener);
+                databaseListenerContext.put(tableName, entryListener);
                 continue;
             }
             for (String schemaName : schemaNames) {
