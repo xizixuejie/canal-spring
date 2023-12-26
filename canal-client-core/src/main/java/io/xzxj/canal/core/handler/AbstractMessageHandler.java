@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author xzxj
@@ -32,8 +31,8 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
         for (CanalEntry.Entry entry : entries) {
             String schemaName = entry.getHeader().getSchemaName();
             String tableName = entry.getHeader().getTableName();
-            EntryListener<?> entryListener = entryListenerContext.findEntryListener(schemaName, tableName);
-            if (!CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType()) || Objects.isNull(entryListener)) {
+            List<EntryListener<?>> entryListenerList = entryListenerContext.findEntryListener(schemaName, tableName);
+            if (!CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType()) || entryListenerList.isEmpty()) {
                 continue;
             }
 
@@ -47,7 +46,9 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
             CanalEntry.EventType eventType = rowChange.getEventType();
             try {
                 for (CanalEntry.RowData rowData : rowDataList) {
-                    rowDataHandler.handleRowData(rowData, entryListener, eventType);
+                    for (EntryListener<?> listener : entryListenerList) {
+                        rowDataHandler.handleRowData(rowData, listener, eventType);
+                    }
                 }
             } catch (Exception e) {
                 log.error("handle row data error", e);
