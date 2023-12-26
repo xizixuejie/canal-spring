@@ -30,6 +30,10 @@ canal:
     flat-message: true
   kafka:
     groupId: sample-test-group
+    topics: boot,demo
+    partition: 0
+  #    dynamic-topic:
+  #      boot: 0,1
   rabbit-mq:
     username: ${spring.rabbitmq.username}
     password: ${spring.rabbitmq.password}

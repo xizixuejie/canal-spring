@@ -42,7 +42,7 @@ public abstract class AbstractMqCanalClient extends AbstractCanalClient {
             List<FlatMessage> flatMessages = mqConnector.getFlatListWithoutAck(timeout, unit);
             log.debug("receive message = {}", flatMessages);
             for (FlatMessage message : flatMessages) {
-                messageHandler.handleMessage(message);
+                messageHandler.handleMessage(destination, message);
             }
             mqConnector.ack();
         } catch (JSONException e) {
@@ -59,7 +59,7 @@ public abstract class AbstractMqCanalClient extends AbstractCanalClient {
             List<Message> messages = mqConnector.getListWithoutAck(timeout, unit);
             log.debug("receive message = {}", messages);
             for (Message message : messages) {
-                messageHandler.handleMessage(message);
+                messageHandler.handleMessage(destination, message);
             }
             mqConnector.ack();
         } catch (JSONException e) {

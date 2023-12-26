@@ -1,11 +1,15 @@
 package io.xzxj.canal.core.context;
 
+import com.google.common.collect.Lists;
 import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.core.model.ListenerKey;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,42 +33,106 @@ public final class DatabaseListenerContext {
     }
 
     /**
-     * key:     数据库名字
+     * key:     destination,schemaName,topic,partition
      * value:   数据库下的所有表的EntryListener
      */
-    private final Map<String, TableListenerMap> map = new HashMap<>();
+    private final Map<ListenerKey, TableListenerMap> map = new HashMap<>();
 
-    public static final String DEFAULT_DATABASE_NAME = "DEFAULT";
-
-    public void put(String tableName, EntryListener<?> listener) {
-        this.put(DEFAULT_DATABASE_NAME, tableName, listener);
+    public void put(ListenerKey listenerKey, String tableName, EntryListener<?> listener) {
+        map.compute(listenerKey, (k, v) -> {
+            if (v == null) {
+                v = new TableListenerMap();
+            }
+            v.put(tableName, listener);
+            return v;
+        });
     }
 
-    public void put(String dbName, String tableName, EntryListener<?> listener) {
-        TableListenerMap dbListeners = map.getOrDefault(dbName, new TableListenerMap());
-        dbListeners.put(tableName, listener);
-        map.put(dbName, dbListeners);
-    }
+    public List<EntryListener<?>> getEntryListenersByTableName(ListenerKey listenerKey, String tableNameRegex) {
+        TableListenerMap tableListenerMap = this.findTableListenerMap(listenerKey);
 
-    public List<EntryListener<?>> getListenersByRegex(String dbName, String tableNameRegex) {
-        // 先根据数据库名找对应的 EntryListener
-        TableListenerMap dbListeners = map.get(dbName);
-        if (dbListeners == null) {
-            // 如果没有查询到，查询默认的数据库名字的 EntryListener
-            dbListeners = map.get(DEFAULT_DATABASE_NAME);
+        if (tableListenerMap == null) {
+            return Lists.newArrayList();
         }
-        if (dbListeners == null) {
-            return new ArrayList<>();
-        }
-        List<EntryListener<?>> result = new ArrayList<>();
-        // 再根据表名找对应的 EntryListener
-        for (Map.Entry<String, List<EntryListener<?>>> entry : dbListeners.entrySet()) {
+
+        Set<EntryListener<?>> result = new HashSet<>();
+        for (Map.Entry<String, List<EntryListener<?>>> entry : tableListenerMap.entrySet()) {
             if (Pattern.compile(tableNameRegex).matcher(entry.getKey()).matches()) {
                 result.addAll(entry.getValue());
             }
         }
-        return result;
+        return new ArrayList<>(result);
     }
+
+    @Nullable
+    private TableListenerMap findTableListenerMap(ListenerKey listenerKey) {
+        List<ListenerKey.Builder> queryBuilders = Lists.newArrayList(
+                new ListenerKey.Builder().destination(listenerKey.getDestination()),
+                new ListenerKey.Builder().topic(listenerKey.getTopic()),
+                new ListenerKey.Builder().partition(listenerKey.getPartition()),
+                new ListenerKey.Builder().schemaName(listenerKey.getSchemaName()));
+
+        // Generate combinations of query builders to cover all possible conditions
+        List<List<ListenerKey.Builder>> combinations = generateCombinations(queryBuilders);
+
+        TableListenerMap result = new TableListenerMap();
+        for (List<ListenerKey.Builder> combination : combinations) {
+            ListenerKey.Builder compositeBuilder = new ListenerKey.Builder();
+            for (ListenerKey.Builder builder : combination) {
+                compositeBuilder = compositeBuilder.merge(builder);
+            }
+
+            TableListenerMap tableListenerMap = map.get(compositeBuilder.build());
+            if (tableListenerMap != null) {
+                for (Map.Entry<String, List<EntryListener<?>>> entry : tableListenerMap.entrySet()) {
+                    result.compute(entry.getKey(), (k, v) -> {
+                        if (v == null) {
+                            v = new ArrayList<>();
+                        }
+                        v.addAll(entry.getValue());
+                        return v;
+                    });
+                }
+            }
+        }
+
+        if (!result.isEmpty()) {
+            return result;
+        }
+
+        return map.get(ListenerKey.empty());
+    }
+
+    // Helper method to generate combinations of query builders
+    private List<List<ListenerKey.Builder>> generateCombinations(List<ListenerKey.Builder> queryBuilders) {
+        List<List<ListenerKey.Builder>> combinations = new ArrayList<>();
+        int n = queryBuilders.size();
+
+        for (int i = 1; i <= n; i++) {
+            combinations.addAll(generateCombinations(queryBuilders, i, 0, new ArrayList<>()));
+        }
+
+        return combinations;
+    }
+
+    private List<List<ListenerKey.Builder>> generateCombinations(
+            List<ListenerKey.Builder> queryBuilders, int k, int start, List<ListenerKey.Builder> current) {
+        List<List<ListenerKey.Builder>> combinations = new ArrayList<>();
+
+        if (k == 0) {
+            combinations.add(new ArrayList<>(current));
+            return combinations;
+        }
+
+        for (int i = start; i < queryBuilders.size(); i++) {
+            current.add(queryBuilders.get(i));
+            combinations.addAll(generateCombinations(queryBuilders, k - 1, i + 1, current));
+            current.remove(current.size() - 1);
+        }
+
+        return combinations;
+    }
+
 
     static class TableListenerMap implements Map<String, List<EntryListener<?>>> {
 

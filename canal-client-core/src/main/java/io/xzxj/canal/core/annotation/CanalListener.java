@@ -16,6 +16,10 @@ import java.lang.annotation.Target;
 @Component
 public @interface CanalListener {
 
+    String[] destination() default {};
+
+    String[] topics() default {};
+
     /**
      * 订阅数据库名
      */

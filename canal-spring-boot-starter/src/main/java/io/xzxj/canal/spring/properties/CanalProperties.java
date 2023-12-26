@@ -20,6 +20,9 @@ public class CanalProperties {
 
     private Boolean async = true;
 
+    /**
+     * 建议对应canal-server的canal.destinations配置
+     */
     private String destination = "example";
 
     private String server = "127.0.0.1:11111";
@@ -37,13 +40,13 @@ public class CanalProperties {
     private TimeUnit unit = TimeUnit.SECONDS;
 
     @NestedConfigurationProperty
-    private CanalMqProperties mq;
+    private CanalMqProperties mq = new CanalMqProperties();
 
     @NestedConfigurationProperty
-    private CanalKafkaProperties kafka;
+    private CanalKafkaProperties kafka = new CanalKafkaProperties();
 
     @NestedConfigurationProperty
-    private CanalRabbitMqProperties rabbitMq;
+    private CanalRabbitMqProperties rabbitMq = new CanalRabbitMqProperties();
 
     public CanalServerMode getServerMode() {
         return serverMode;

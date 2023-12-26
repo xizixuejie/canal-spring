@@ -26,12 +26,12 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
     }
 
     @Override
-    public void handleMessage(Message message) {
+    public void handleMessage(String destination, Message message) {
         List<CanalEntry.Entry> entries = message.getEntries();
         for (CanalEntry.Entry entry : entries) {
             String schemaName = entry.getHeader().getSchemaName();
             String tableName = entry.getHeader().getTableName();
-            List<EntryListener<?>> entryListenerList = entryListenerContext.findEntryListener(schemaName, tableName);
+            List<EntryListener<?>> entryListenerList = entryListenerContext.findEntryListener(message.getId(), destination, schemaName, tableName);
             if (!CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType()) || entryListenerList.isEmpty()) {
                 continue;
             }

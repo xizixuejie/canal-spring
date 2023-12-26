@@ -23,8 +23,8 @@ public class AsyncMessageHandlerImpl extends AbstractMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message message) {
-        executor.execute(() -> super.handleMessage(message));
+    public void handleMessage(String destination, Message message) {
+        executor.execute(() -> super.handleMessage(destination, message));
     }
 
 }

@@ -27,8 +27,8 @@ public class TcpCanalClient extends AbstractCanalClient {
                 Message message = connector.getWithoutAck(batchSize, timeout, unit);
                 log.debug("receive message={}", message);
                 batchId = message.getId();
-                if (message.getId() != -1 && message.getEntries().size() != 0) {
-                    messageHandler.handleMessage(message);
+                if (message.getId() != -1 && !message.getEntries().isEmpty()) {
+                    messageHandler.handleMessage(destination, message);
                 }
                 connector.ack(batchId);
             } catch (Exception e) {
@@ -114,7 +114,8 @@ public class TcpCanalClient extends AbstractCanalClient {
             CanalConnector canalConnector = CanalConnectors.newSingleConnector(new InetSocketAddress(hostname, port), destination, username, password);
             TcpCanalClient tcpCanalClient = new TcpCanalClient();
             tcpCanalClient.connector = canalConnector;
-            tcpCanalClient.messageHandler = messageHandler;
+            tcpCanalClient.destination = this.destination;
+            tcpCanalClient.messageHandler = this.messageHandler;
             tcpCanalClient.filter = this.filter;
             tcpCanalClient.unit = this.unit;
             tcpCanalClient.batchSize = this.batchSize;

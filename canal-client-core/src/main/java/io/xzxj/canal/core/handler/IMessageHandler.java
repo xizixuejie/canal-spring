@@ -6,6 +6,6 @@ package io.xzxj.canal.core.handler;
  */
 public interface IMessageHandler<T> {
 
-    void handleMessage(T t) throws Exception;
+    void handleMessage(String destination, T t) throws Exception;
 
 }

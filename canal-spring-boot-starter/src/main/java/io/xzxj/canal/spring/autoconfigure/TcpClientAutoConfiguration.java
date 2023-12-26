@@ -12,6 +12,7 @@ import io.xzxj.canal.core.handler.impl.AsyncMessageHandlerImpl;
 import io.xzxj.canal.core.handler.impl.RowDataHandlerImpl;
 import io.xzxj.canal.core.handler.impl.SyncMessageHandlerImpl;
 import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
+import io.xzxj.canal.spring.client.CanalClientList;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -61,6 +62,29 @@ public class TcpClientAutoConfiguration {
 
     @Bean(initMethod = "init", destroyMethod = "destroy")
     @ConditionalOnMissingBean(AbstractCanalClient.class)
+    public CanalClientList tcpCanalClientList(IMessageHandler<Message> messageHandler) {
+        CanalClientList list = new CanalClientList();
+        String[] destinations = canalProperties.getDestination().split(",");
+        String server = canalProperties.getServer();
+        String[] array = server.split(":");
+        TcpCanalClient.Builder builder = TcpCanalClient.builder()
+                .hostname(array[0])
+                .port(Integer.parseInt(array[1]))
+                .username(canalProperties.getUsername())
+                .password(canalProperties.getPassword())
+                .messageHandler(messageHandler)
+                .batchSize(canalProperties.getBatchSize())
+                .filter(canalProperties.getFilter())
+                .timeout(canalProperties.getTimeout())
+                .unit(canalProperties.getUnit());
+        for (String destination : destinations) {
+            list.add(builder.destination(destination).build());
+        }
+        return list;
+    }
+
+    @Bean(initMethod = "init", destroyMethod = "destroy")
+    @ConditionalOnMissingBean({AbstractCanalClient.class, CanalClientList.class})
     public TcpCanalClient tcpCanalClient(IMessageHandler<Message> messageHandler) {
         String server = canalProperties.getServer();
         String[] array = server.split(":");

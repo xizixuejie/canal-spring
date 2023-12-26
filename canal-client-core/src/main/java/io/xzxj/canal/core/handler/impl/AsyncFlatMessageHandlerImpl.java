@@ -26,8 +26,8 @@ public class AsyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
     }
 
     @Override
-    public void handleMessage(FlatMessage flatMessage) {
-        executor.execute(() -> super.handleMessage(flatMessage));
+    public void handleMessage(String destination, FlatMessage flatMessage) {
+        executor.execute(() -> super.handleMessage(destination, flatMessage));
     }
 
 }

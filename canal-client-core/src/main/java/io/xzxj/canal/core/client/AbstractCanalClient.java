@@ -22,6 +22,8 @@ public abstract class AbstractCanalClient implements ICanalClient {
 
     protected CanalConnector connector;
 
+    protected String destination;
+
     protected IMessageHandler messageHandler;
 
     protected String filter = "";

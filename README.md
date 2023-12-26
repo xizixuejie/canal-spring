@@ -116,7 +116,7 @@ public class TestListener implements EntryListener<TestEntity> {
 |-----------------------------------|---------------------------------------------------------------------------------------|-----------------|
 | canal.server                      | canal服务地址<br />如果是Kafka模式为Kafka地址，多个地址以`,`分隔。<br />如果是rabbitMQ模式为rabbitMQ服务地址，目前只支持单个 | 127.0.0.1:11111 |
 | canal.annotation-type             | 选择实体类上的注解类型                                                                           | mybatis_plus    |
-| canal.destination                 | canal 的instance 名称<br />kafka模式为topic 名称<br />rabbitMQ模式为queue名称                      | example         |
+| canal.destination                 | canal 的instance 名称<br />~~kafka模式为topic 名称~~<br />rabbitMQ模式为queue名称                  | example         |
 | canal.filter                      | canal过滤的表名称，如配置则只订阅配置的表                                                               | ""              |
 | canal.async                       | 是否是异步消费，异步消费时，消费时异常将导致消息不会回滚，也不保证顺序性                                                  | true            |
 | canal.timeout                     | 消费的时间间隔(s)                                                                            | 1s              |
@@ -125,7 +125,9 @@ public class TestListener implements EntryListener<TestEntity> {
 | canal.password                    | canal 的密码                                                                             | null            |
 | canal.mq.flat-message             | JSON 消息格式                                                                             | true            |
 | canal.kafka.group-id              | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
-| canal.kafka.partition             | kafka partition                                                                       | null            |
+| canal.kafka.dynamic-topic         | kafka消费者订阅消息的topic和partition                                                          | {}              |
+| canal.kafka.topics                | kafka消费者订阅消息的topic                                                                    | []              |
+| canal.kafka.partition             | kafka partition 已过时，如果需要设置topic分区，请使用dynamicTopic来指定                                  | null            |
 | canal.rabbit-mq.virtual-host      | rabbitMq  virtualHost                                                                 | /               |
 | canal.rabbit-mq.queue-name        | rabbitMq 队列名                                                                          | null            |
 | canal.rabbit-mq.access-key        | 阿里的ak                                                                                 | ""              |

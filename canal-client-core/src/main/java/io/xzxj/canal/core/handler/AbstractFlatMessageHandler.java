@@ -30,7 +30,7 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
     }
 
     @Override
-    public void handleMessage(FlatMessage flatMessage) {
+    public void handleMessage(String destination, FlatMessage flatMessage) {
         List<Map<String, String>> messageData = flatMessage.getData();
         if (messageData == null || messageData.isEmpty()) {
             return;
@@ -38,7 +38,7 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
 
         String schemaName = flatMessage.getDatabase();
         String tableName = flatMessage.getTable();
-        List<EntryListener<?>> entryListenerList = entryListenerContext.findEntryListener(schemaName, tableName);
+        List<EntryListener<?>> entryListenerList = entryListenerContext.findEntryListener(flatMessage.getId(), destination, schemaName, tableName);
         if (entryListenerList.isEmpty()) {
             return;
         }
