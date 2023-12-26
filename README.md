@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.9</version>
+       <version>0.0.10</version>
    </dependency>
    ```
 
@@ -98,10 +98,17 @@ public class TestListener implements EntryListener<TestEntity> {
 
 如果你的实体类属性不在 `io.xzxj.canal.core.convertor.impl` 这个包里实现，可以自定义类型转换器。
 
+**全局配置方式**
+
 1. 自定义bean实现 `io.xzxj.canal.core.convertor.IColumnConvertor<T>` ，泛型是你实体类的类型。
 2. 实现 `convert` 方法
 
+**注解单独指定**
 
+优先级比全局高
+
+1. 在实体类属性上添加 `@ColumnConvertor` 注解
+2. value是 `io.xzxj.canal.core.convertor.IColumnConvertor<T>` 的实现类，需要有一个无参构造函数。
 
 ## 配置说明
 
@@ -131,6 +138,7 @@ public class TestListener implements EntryListener<TestEntity> {
 
 ## 更新记录
 
+- 2023-12-26 v0.0.10 修改了一些bug，支持一个表对应多个EntryListener，支持注解指定自定义实体类属性类型转换。
 - 2023-12-18 v0.0.9 允许自定义实体类属性名称和类型转换。
 - 2023-12-13 v0.0.8 优化Listener处理过程；mq模式配置flat-message。
 - 2023-09-25 v0.0.7 优化定义多个同库不同表Listener导致只能获取到最后一个Listener信息的问题。
