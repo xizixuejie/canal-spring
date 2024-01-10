@@ -25,6 +25,7 @@ import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.google.common.collect.Lists;
 import io.xzxj.canal.core.context.MqTopicMap;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -59,7 +60,7 @@ public class DynamicTopicKafkaCanalConnector implements CanalMQConnector {
     protected volatile boolean running = false;
     protected boolean flatMessage;
 
-    private final Map<Integer, Long> currentOffsets = new ConcurrentHashMap<>();
+    private final Map<TopicPartitionKey, Long> currentOffsets = new ConcurrentHashMap<>();
 
     public DynamicTopicKafkaCanalConnector(String servers,
                                            Map<String, String> dynamicTopic,
@@ -210,7 +211,7 @@ public class DynamicTopicKafkaCanalConnector implements CanalMQConnector {
 
         currentOffsets.clear();
         for (TopicPartition topicPartition : records.partitions()) {
-            currentOffsets.put(topicPartition.partition(), kafkaConsumer.position(topicPartition));
+            currentOffsets.put(new TopicPartitionKey(topicPartition), kafkaConsumer.position(topicPartition));
         }
 
         if (!records.isEmpty()) {
@@ -251,7 +252,7 @@ public class DynamicTopicKafkaCanalConnector implements CanalMQConnector {
 
         currentOffsets.clear();
         for (TopicPartition topicPartition : records.partitions()) {
-            currentOffsets.put(topicPartition.partition(), kafkaConsumer2.position(topicPartition));
+            currentOffsets.put(new TopicPartitionKey(topicPartition), kafkaConsumer2.position(topicPartition));
         }
 
         if (!records.isEmpty()) {
@@ -283,13 +284,10 @@ public class DynamicTopicKafkaCanalConnector implements CanalMQConnector {
         if (kafkaConsumer == null) {
             return;
         }
-        for (Map.Entry<Integer, Long> entry : currentOffsets.entrySet()) {
-            List<TopicPartition> topicPartitionList = dynamicTopic.keySet().stream()
-                    .map(topic -> new TopicPartition(topic, entry.getKey()))
-                    .collect(Collectors.toList());
-            for (TopicPartition topicPartition : topicPartitionList) {
-                kafkaConsumer.seek(topicPartition, entry.getValue() - 1);
-            }
+
+        for (Map.Entry<TopicPartitionKey, Long> entry : currentOffsets.entrySet()) {
+            TopicPartition topicPartition = entry.getKey().toTopicPartition();
+            kafkaConsumer.seek(topicPartition, entry.getValue() - 1);
         }
     }
 
@@ -353,6 +351,35 @@ public class DynamicTopicKafkaCanalConnector implements CanalMQConnector {
         long t = unit.toMillis(timeout);
         properties.put("request.timeout.ms", String.valueOf(t + 60000));
         properties.put("session.timeout.ms", String.valueOf(t));
+    }
+
+    static class TopicPartitionKey extends MultiKey<Object> {
+        private final String topic;
+        private final Integer partition;
+
+        public TopicPartitionKey(TopicPartition topicPartition) {
+            super(topicPartition.topic(), topicPartition.partition());
+            this.topic = topicPartition.topic();
+            this.partition = topicPartition.partition();
+        }
+
+        public TopicPartitionKey(String topic, Integer partition) {
+            super(topic, partition);
+            this.topic = topic;
+            this.partition = partition;
+        }
+
+        public TopicPartition toTopicPartition() {
+            return new TopicPartition(topic, partition);
+        }
+
+        public String getTopic() {
+            return topic;
+        }
+
+        public Integer getPartition() {
+            return partition;
+        }
     }
 
 }
