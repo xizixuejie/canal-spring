@@ -57,7 +57,7 @@ public final class DatabaseListenerContext {
 
         Set<EntryListener<?>> result = new HashSet<>();
         for (Map.Entry<String, List<EntryListener<?>>> entry : tableListenerMap.entrySet()) {
-            if (Pattern.compile(tableNameRegex).matcher(entry.getKey()).matches()) {
+            if (Pattern.compile(entry.getKey()).matcher(tableNameRegex).matches()) {
                 result.addAll(entry.getValue());
             }
         }
