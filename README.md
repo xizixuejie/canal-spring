@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.10</version>
+       <version>0.0.11</version>
    </dependency>
    ```
 
@@ -110,6 +110,12 @@ public class TestListener implements EntryListener<TestEntity> {
 1. 在实体类属性上添加 `@ColumnConvertor` 注解
 2. value是 `io.xzxj.canal.core.convertor.IColumnConvertor<T>` 的实现类，需要有一个无参构造函数。
 
+### @CanalTopicPartitions使用说明
+
+> 只在kafka模式下生效
+
+可以加在你的 `EntryListener<T>` 的实现类上，用来指定监听具体的哪个topic以及partition，如果只指定了topic，则会监听这个topic的所有partition。
+
 ## 配置说明
 
 | 属性                                | 描述                                                                                    | 默认值             |
@@ -125,7 +131,7 @@ public class TestListener implements EntryListener<TestEntity> {
 | canal.password                    | canal 的密码                                                                             | null            |
 | canal.mq.flat-message             | JSON 消息格式                                                                             | true            |
 | canal.kafka.group-id              | kafka groupId 消费者订阅消息时可使用，kafka canal 客户端                                             | null            |
-| canal.kafka.dynamic-topic         | kafka消费者订阅消息的topic和partition                                                          | {}              |
+| canal.kafka.dynamic-topic         | kafka消费者订阅消息的topic和partition，如果用这个属性指定topic配置，则会忽略canal.kafka.topics配置                | {}              |
 | canal.kafka.topics                | kafka消费者订阅消息的topic                                                                    | []              |
 | canal.kafka.partition             | kafka partition 已过时，如果需要设置topic分区，请使用dynamicTopic来指定                                  | null            |
 | canal.rabbit-mq.virtual-host      | rabbitMq  virtualHost                                                                 | /               |
@@ -140,6 +146,7 @@ public class TestListener implements EntryListener<TestEntity> {
 
 ## 更新记录
 
+- 2024-03-12 v0.0.11 修改了一些bug；kafka模式和tcp模式支持多个destination，而且在kafka模式下支持自定义topic、partition
 - 2023-12-26 v0.0.10 修改了一些bug，支持一个表对应多个EntryListener，支持注解指定自定义实体类属性类型转换。
 - 2023-12-18 v0.0.9 允许自定义实体类属性名称和类型转换。
 - 2023-12-13 v0.0.8 优化Listener处理过程；mq模式配置flat-message。
