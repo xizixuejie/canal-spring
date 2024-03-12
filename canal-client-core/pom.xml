@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.xizixuejie</groupId>
         <artifactId>canal-spring</artifactId>
-        <version>0.0.11</version>
+        <version>0.0.12</version>
     </parent>
 
     <artifactId>canal-client-core</artifactId>
