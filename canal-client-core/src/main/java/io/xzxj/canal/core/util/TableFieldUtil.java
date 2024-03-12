@@ -98,7 +98,7 @@ public class TableFieldUtil {
         field.setAccessible(true);
 
         if (value == null || value.isEmpty()) {
-            field.set(object, value);
+            field.set(object, null);
             return;
         }
 
