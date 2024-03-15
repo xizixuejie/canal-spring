@@ -7,17 +7,13 @@ import io.xzxj.canal.spring.client.CanalClientList;
 import io.xzxj.canal.spring.properties.CanalProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 /**
  * @author xzxj
  * @date 2023/3/15 13:51
  */
-@EnableConfigurationProperties(CanalProperties.class)
 @ConditionalOnProperty(value = "canal.server-mode", havingValue = "kafka")
-@Import({ThreadPoolAutoConfiguration.class, CanalAutoConfiguration.class})
 public class KafkaClientAutoConfiguration extends BaseMqCanalClientAutoConfiguration {
 
     public KafkaClientAutoConfiguration(CanalProperties canalProperties) {

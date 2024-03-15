@@ -7,12 +7,22 @@ import io.xzxj.canal.core.listener.EntryListener;
 import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
 import io.xzxj.canal.core.metadata.JpaEntityInfoHelper;
 import io.xzxj.canal.core.metadata.MyBatisPlusEntityInfoHelper;
+import io.xzxj.canal.spring.properties.CanalProperties;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
+@EnableConfigurationProperties(CanalProperties.class)
+@ImportAutoConfiguration({
+        ThreadPoolAutoConfiguration.class,
+        TcpClientAutoConfiguration.class,
+        KafkaClientAutoConfiguration.class,
+        RabbitMqClientAutoConfiguration.class,
+})
 public class CanalAutoConfiguration {
 
     @Bean
