@@ -13,7 +13,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.12</version>
+       <version>0.0.13</version>
    </dependency>
    ```
 
@@ -146,6 +146,7 @@ public class TestListener implements EntryListener<TestEntity> {
 
 ## 更新记录
 
+- 2024-03-15 v0.0.13 优化了异常处理；修改了spring自动配置
 - 2024-03-12 v0.0.12 修改了tableName正则配置失效问题
 - 2024-03-12 v0.0.11 修改了一些bug；kafka模式和tcp模式支持多个destination，而且在kafka模式下支持自定义topic、partition
 - 2023-12-26 v0.0.10 修改了一些bug，支持一个表对应多个EntryListener，支持注解指定自定义实体类属性类型转换。
