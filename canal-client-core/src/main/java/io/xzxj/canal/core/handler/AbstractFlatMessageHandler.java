@@ -58,7 +58,7 @@ public abstract class AbstractFlatMessageHandler implements IMessageHandler<Flat
                     rowDataHandler.handleRowData(maps, listener, eventType);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("parse event has an error , data:" + messageData, e);
+                throw new RuntimeException("handle row data error,", e);
             }
         }
     }

@@ -51,7 +51,7 @@ public abstract class AbstractMessageHandler implements IMessageHandler<Message>
                     }
                 }
             } catch (Exception e) {
-                log.error("handle row data error", e);
+                throw new RuntimeException("handle row data error,", e);
             }
         }
     }
