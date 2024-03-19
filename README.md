@@ -5,9 +5,19 @@
 
 便于使用的canal-springboot客户端
 
+还在测试使用阶段，如果在使用过程中发现问题，欢迎 [提交issue](https://github.com/xizixuejie/canal-spring/issues/new)
+或者 [加入qq群](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=7Gvt3n_pwCIGgrFEz0uODds4v4tMkln6&authKey=bns6pJSmMy8nZ0HvAleVi%2Fh4um%2FEBChQmDmWDUii0Wrox9XrpYW7G%2FQV6xjv6Alo&noverify=0&group_code=286331326)
+讨论
+
 ## 快速开始
 
-1. 引入maven依赖
+1. 环境依赖
+
+   jdk >= 1.8
+
+   canal-server = 1.1.6
+
+2. 引入maven依赖
 
    ```xml
    <dependency>
@@ -17,7 +27,7 @@
    </dependency>
    ```
 
-2. 配置canal服务基本信息
+3. 配置canal服务基本信息
 
    ```yaml
    canal:
@@ -25,13 +35,13 @@
      destination: example
    ```
 
-3. 在启动类添加注解 `@EnableCanalListener`
+4. 在启动类添加注解 `@EnableCanalListener`
 
    `value`属性或者`basePackages` 属性指定扫描包路径。
 
-4. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
+5. 自定义CanalListener 实现 `io.xzxj.canal.core.listener.EntryListener` 接口
 
-5. 实现类上增加注解 `@CanalListener(schemaName = "${database}", tableName = "${table_name}")` 
+6. 实现类上增加注解 `@CanalListener(schemaName = "${database}", tableName = "${table_name}")`
 
     `${database}` 监听数据库名
 
@@ -39,7 +49,7 @@
 
     接口泛型是对应的实体类
 
-6. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
+7. 实现 `insert`  、 `update` 或者 `delete` 方法来监听你想做的操作
 
 
 
