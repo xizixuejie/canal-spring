@@ -16,7 +16,7 @@ public abstract class AbstractCanalClient implements ICanalClient {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCanalClient.class);
 
-    protected volatile boolean runStatus;
+    protected boolean runStatus;
 
     private Thread thread;
 
@@ -36,20 +36,24 @@ public abstract class AbstractCanalClient implements ICanalClient {
 
     @Override
     public void init() {
-        log.info("canal client init");
+        log.debug("canal client [{}] init", destination);
         this.connectCanal();
-        thread = new Thread(this::handleListening);
-        thread.setName("canal-client-thread");
+        thread = new Thread(() -> {
+            while (runStatus && !Thread.interrupted()) {
+                handleListening();
+            }
+        });
+        thread.setName("canal-thread-" + destination);
         runStatus = true;
         thread.start();
     }
 
     private void connectCanal() {
         try {
-            log.info("canal client connecting");
+            log.info("canal client [{}] connecting", destination);
             connector.connect();
             this.subscribe();
-            log.info("canal client connect success");
+            log.info("canal client [{}] connect success", destination);
         } catch (CanalClientException e) {
             log.error("canal client connect error: {}", e.getMessage(), e);
             this.destroy();
@@ -62,12 +66,15 @@ public abstract class AbstractCanalClient implements ICanalClient {
 
     @Override
     public void destroy() {
-        connector.unsubscribe();
-        log.info("canal client destroy");
+        log.info("canal client [{}] destroy", destination);
+        runStatus = false;
+        if (connector != null) {
+            connector.unsubscribe();
+            connector.disconnect();
+        }
         if (thread != null) {
             thread.interrupt();
         }
-        runStatus = false;
     }
 
 }

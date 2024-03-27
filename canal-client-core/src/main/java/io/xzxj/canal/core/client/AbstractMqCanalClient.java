@@ -25,15 +25,11 @@ public abstract class AbstractMqCanalClient extends AbstractCanalClient {
      * @param flatMessage 是否 JSON
      */
     void handleListening(@NonNull Boolean flatMessage) {
-        while (runStatus) {
-            if (Boolean.TRUE.equals(flatMessage)) {
-                defaultFlatMessageHandle();
-            } else {
-                defaultMessageHandle();
-            }
+        if (Boolean.TRUE.equals(flatMessage)) {
+            defaultFlatMessageHandle();
+        } else {
+            defaultMessageHandle();
         }
-        connector.unsubscribe();
-        connector.disconnect();
     }
 
     protected final void defaultFlatMessageHandle() {
