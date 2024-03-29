@@ -1,0 +1,23 @@
+spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: canal
+    password: canal
+    virtual-host: canal
+    template:
+      exchange: canal_exchange
+
+canal:
+  server: 127.0.0.1
+  destination: example
+  async: false
+  server-mode: rabbit_mq
+  mq:
+    flat-message: true
+  rabbit-mq:
+    username: ${spring.rabbitmq.username}
+    password: ${spring.rabbitmq.password}
+    virtual-host: ${spring.rabbitmq.virtual-host}
+  annotation-type: hibernate
+

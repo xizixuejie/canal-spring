@@ -2,41 +2,5 @@ server:
   port: 9000
 
 spring:
-  kafka:
-    bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      enable-auto-commit: true
-      auto-commit-interval: 100
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: canal
-    password: canal
-    virtual-host: canal
-    template:
-      exchange: canal_exchange
-
-canal:
-  server: ${spring.kafka.bootstrap-servers}
-  destination: example
-  async: true
-  server-mode: kafka
-  mq:
-    flat-message: true
-  kafka:
-    groupId: sample-test-group
-    topics: boot,demo
-    partition: 0
-  #    dynamic-topic:
-  #      boot: 0,1
-  rabbit-mq:
-    username: ${spring.rabbitmq.username}
-    password: ${spring.rabbitmq.password}
-    virtual-host: ${spring.rabbitmq.virtual-host}
-  annotation-type: hibernate
-
+  profiles:
+    active: tcp

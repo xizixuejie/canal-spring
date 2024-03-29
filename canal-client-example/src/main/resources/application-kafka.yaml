@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+      auto-commit-interval: 100
+
+canal:
+  server: ${spring.kafka.bootstrap-servers}
+  destination: example
+  async: true
+  server-mode: kafka
+  mq:
+    flat-message: true
+  kafka:
+    groupId: sample-test-group
+    topics: boot,demo
+  #  partition: 0
+  #    dynamic-topic:
+  #      boot: 0,1
+  annotation-type: hibernate
+
