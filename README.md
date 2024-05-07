@@ -23,7 +23,7 @@
    <dependency>
        <groupId>io.github.xizixuejie</groupId>
        <artifactId>canal-spring-boot-starter</artifactId>
-       <version>0.0.14</version>
+       <version>0.0.15</version>
    </dependency>
    ```
 
@@ -156,6 +156,7 @@ public class TestListener implements EntryListener<TestEntity> {
 
 ## 更新记录
 
+- 2024-05-07 v0.0.15 修改了获取类的属性，只能获取一层父类属性的问题。
 - 2024-03-27 v0.0.14 修改了多个destination时，CanalClient销毁出现异常的问题
 - 2024-03-15 v0.0.13 优化了异常处理；修改了spring自动配置
 - 2024-03-12 v0.0.12 修改了tableName正则配置失效问题
