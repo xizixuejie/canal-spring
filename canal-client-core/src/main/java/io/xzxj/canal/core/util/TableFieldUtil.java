@@ -89,13 +89,7 @@ public class TableFieldUtil {
     }
 
     public static <R> void setFieldValue(R object, String fieldName, String value) throws NoSuchFieldException, IllegalAccessException {
-        Field field;
-        try {
-            field = object.getClass().getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            field = object.getClass().getSuperclass().getDeclaredField(fieldName);
-        }
-        field.setAccessible(true);
+        Field field = getField(object, fieldName);
 
         if (value == null || value.isEmpty()) {
             field.set(object, null);
@@ -111,6 +105,27 @@ public class TableFieldUtil {
         }
         Object result = convertType(field.getGenericType(), value);
         field.set(object, result);
+    }
+
+    private static <R> Field getField(R object, String fieldName) throws NoSuchFieldException {
+        Field field = null;
+        Class<?> clazz = object.getClass();
+        // 循环直到找到属性或到达顶层父类
+        while (field == null && clazz != null) {
+            try {
+                field = clazz.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                // 没有找到属性，继续查找父类
+                clazz = clazz.getSuperclass();
+            }
+        }
+        if (field == null) {
+            // 如果找不到属性，抛出 NoSuchFieldException
+            throw new NoSuchFieldException("Field '" + fieldName + "' not found in class hierarchy.");
+        }
+
+        field.setAccessible(true);
+        return field;
     }
 
     /**
