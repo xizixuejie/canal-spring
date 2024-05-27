@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class AbstractEntityInfoHelper {
@@ -84,15 +83,19 @@ public abstract class AbstractEntityInfoHelper {
      * @return 列名和属性名对应关系map
      */
     public Map<String, String> getFieldMap(Class<?> clazz) {
-        Map<String, String> map = TABLE_FILED_CACHE_MAP.get(clazz);
-        if (map == null) {
-            List<Field> fields = FieldUtils.getAllFieldsList(clazz);
-            map = fields.stream().filter(this::isColumnFiled)
-                    .filter(field -> !Modifier.isStatic(field.getModifiers()))
-                    .collect(Collectors.toMap(this::getColumnName, Field::getName));
-            TABLE_FILED_CACHE_MAP.putIfAbsent(clazz, map);
-        }
-        return map;
+        return TABLE_FILED_CACHE_MAP.computeIfAbsent(clazz, it -> {
+            Map<String, String> map = new ConcurrentHashMap<>();
+            // 获取所有字段（包括父类字段）
+            List<Field> fields = FieldUtils.getAllFieldsList(it);
+            for (Field field : fields) {
+                // 跳过静态字段或非列字段
+                if (!isColumnFiled(field) || Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+                map.put(getColumnName(field), field.getName());
+            }
+            return map;
+        });
     }
 
     /**

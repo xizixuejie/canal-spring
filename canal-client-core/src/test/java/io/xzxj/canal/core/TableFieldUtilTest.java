@@ -1,9 +1,12 @@
 package io.xzxj.canal.core;
 
 import io.xzxj.canal.core.entity.Example;
+import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
+import io.xzxj.canal.core.metadata.JpaEntityInfoHelper;
 import io.xzxj.canal.core.util.TableFieldUtil;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -24,6 +27,14 @@ public class TableFieldUtilTest {
         final String filedName = "xxx";
         final String value = "123";
         assertThrows(NoSuchFieldException.class, () -> TableFieldUtil.setFieldValue(example, filedName, value));
+    }
+
+    @Test
+    void testGetFieldMap() {
+        AbstractEntityInfoHelper entityInfoHelper = new JpaEntityInfoHelper();
+        assertDoesNotThrow(() -> {
+            entityInfoHelper.getFieldMap(Example.class);
+        });
     }
 
 }
