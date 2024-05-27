@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.xizixuejie</groupId>
         <artifactId>canal-spring</artifactId>
-        <version>0.0.15</version>
+        <version>0.0.16</version>
     </parent>
 
     <artifactId>canal-client-core</artifactId>
@@ -34,6 +34,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -54,6 +55,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
