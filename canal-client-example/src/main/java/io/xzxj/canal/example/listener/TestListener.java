@@ -5,11 +5,13 @@ import io.xzxj.canal.core.listener.EntryListener;
 import io.xzxj.canal.example.entity.TestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * @author xzxj
  * @date 2023/3/11 13:53
  */
+@Component
 @CanalListener
 public class TestListener implements EntryListener<TestEntity> {
 
