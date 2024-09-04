@@ -20,9 +20,11 @@ public class TestEntity {
 
     private String name;
 
+    @Column(name = "f_age")
     @TableField("f_age")
     private Integer age;
 
+    @TableField("f_gender")
     @Column(name = "f_gender")
     private Integer gender;
 

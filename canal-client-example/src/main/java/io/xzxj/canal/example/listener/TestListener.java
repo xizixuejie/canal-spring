@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 /**
  * @author xzxj
  * @date 2023/3/11 13:53
@@ -23,7 +25,8 @@ public class TestListener implements EntryListener<TestEntity> {
     }
 
     @Override
-    public void update(TestEntity before, TestEntity after) {
+    public void update(TestEntity before, TestEntity after, Set<String> fields) {
+        log.info("update fields={}", fields);
         log.info("update before={}", before);
         log.info("update after={}", after);
     }

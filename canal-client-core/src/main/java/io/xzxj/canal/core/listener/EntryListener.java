@@ -1,5 +1,7 @@
 package io.xzxj.canal.core.listener;
 
+import java.util.Set;
+
 /**
  * @author xzxj
  * @date 2023/3/11 10:44
@@ -20,8 +22,9 @@ public interface EntryListener<T> {
      *
      * @param before 修改之前的数据
      * @param after  修改之后的数据
+     * @param fields 更新的属性集合
      */
-    default void update(T before, T after) {
+    default void update(T before, T after, Set<String> fields) {
 
     }
 

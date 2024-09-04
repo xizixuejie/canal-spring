@@ -37,7 +37,7 @@ public class BaseMqCanalClientAutoConfiguration {
     @ConditionalOnMissingBean(RowDataHandler.class)
     @ConditionalOnProperty(value = "canal.mq.flat-message", havingValue = "false")
     public RowDataHandler<CanalEntry.RowData> messageRowDataHandler(AbstractEntityInfoHelper entityInfoHelper) {
-        return new RowDataHandlerImpl(new EntryColumnConvertFactory(entityInfoHelper));
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory(entityInfoHelper), entityInfoHelper);
     }
 
     @Bean
@@ -61,7 +61,7 @@ public class BaseMqCanalClientAutoConfiguration {
     @ConditionalOnMissingBean(RowDataHandler.class)
     @ConditionalOnProperty(value = "canal.mq.flat-message", havingValue = "true", matchIfMissing = true)
     public RowDataHandler<List<Map<String, String>>> flatMessageRowDataHandler(AbstractEntityInfoHelper entityInfoHelper) {
-        return new MapRowDataHandlerImpl(new MapConvertFactory(entityInfoHelper));
+        return new MapRowDataHandlerImpl(new MapConvertFactory(entityInfoHelper), entityInfoHelper);
     }
 
     @Bean

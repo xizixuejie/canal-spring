@@ -4,11 +4,13 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import io.xzxj.canal.core.factory.IConvertFactory;
 import io.xzxj.canal.core.handler.RowDataHandler;
 import io.xzxj.canal.core.listener.EntryListener;
+import io.xzxj.canal.core.metadata.AbstractEntityInfoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xzxj
@@ -19,9 +21,12 @@ public class MapRowDataHandlerImpl implements RowDataHandler<List<Map<String, St
     private static final Logger log = LoggerFactory.getLogger(MapRowDataHandlerImpl.class);
 
     private final IConvertFactory<Map<String, String>> convertFactory;
+    private final AbstractEntityInfoHelper entityInfoHelper;
 
-    public MapRowDataHandlerImpl(IConvertFactory<Map<String, String>> convertFactory) {
+    public MapRowDataHandlerImpl(IConvertFactory<Map<String, String>> convertFactory,
+                                 AbstractEntityInfoHelper entityInfoHelper) {
         this.convertFactory = convertFactory;
+        this.entityInfoHelper = entityInfoHelper;
     }
 
     @Override
@@ -37,9 +42,11 @@ public class MapRowDataHandlerImpl implements RowDataHandler<List<Map<String, St
                 entryListener.insert(entry);
                 break;
             case UPDATE:
-                R before = convertFactory.newInstance(entryListener, mapList.get(1));
+                Map<String, String> old = mapList.get(1);
+                R before = convertFactory.newInstance(entryListener, old);
                 R after = convertFactory.newInstance(entryListener, mapList.get(0));
-                entryListener.update(before, after);
+                Set<String> fields = entityInfoHelper.getFields(before.getClass(), old.keySet());
+                entryListener.update(before, after, fields);
                 break;
             case DELETE:
                 R o = convertFactory.newInstance(entryListener, mapList.get(0));

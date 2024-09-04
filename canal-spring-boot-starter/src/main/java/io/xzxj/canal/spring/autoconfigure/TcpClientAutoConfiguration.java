@@ -36,7 +36,7 @@ public class TcpClientAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RowDataHandler.class)
     public RowDataHandler<CanalEntry.RowData> rowDataHandler(AbstractEntityInfoHelper entityInfoHelper) {
-        return new RowDataHandlerImpl(new EntryColumnConvertFactory(entityInfoHelper));
+        return new RowDataHandlerImpl(new EntryColumnConvertFactory(entityInfoHelper), entityInfoHelper);
     }
 
     @Bean
