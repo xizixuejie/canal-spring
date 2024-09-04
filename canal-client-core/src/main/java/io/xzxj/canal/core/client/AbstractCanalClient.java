@@ -16,7 +16,7 @@ public abstract class AbstractCanalClient implements ICanalClient {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCanalClient.class);
 
-    protected boolean runStatus;
+    protected volatile boolean runStatus;
 
     private Thread thread;
 

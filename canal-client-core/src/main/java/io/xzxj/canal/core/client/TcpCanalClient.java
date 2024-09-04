@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -31,12 +32,47 @@ public class TcpCanalClient extends AbstractCanalClient {
             }
             connector.ack(batchId);
         } catch (Exception e) {
+            // 断线重连
+            if (e.getCause() instanceof IOException) {
+                connector.disconnect();
+                runStatus = false;
+                reconnectToCanal();
+                return;
+            }
+
+            // 刚连接的时候，可能会出现这个异常
+            boolean shouldStartFirst = e.getCause().getMessage().contains("should start first");
+            if (shouldStartFirst) {
+                return;
+            }
             log.error("canal 消费异常 回滚消息", e);
             if (connector != null) {
                 connector.rollback(batchId);
             }
         }
     }
+
+    private void reconnectToCanal() {
+        if (runStatus) {
+            return;
+        }
+        try {
+            log.info("canal client [{}] reconnecting", destination);
+            connector.connect();
+            this.subscribe();
+            runStatus = true;
+            log.info("canal client [{}] reconnect success", destination);
+        } catch (Exception e) {
+            log.error("canal client reconnect error: {}", e.getMessage());
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            reconnectToCanal();
+        }
+    }
+
 
     public static Builder builder() {
         return new Builder();
