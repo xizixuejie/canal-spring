@@ -6,7 +6,7 @@
 
     <groupId>io.github.xizixuejie</groupId>
     <artifactId>canal-spring</artifactId>
-    <version>0.0.16</version>
+    <version>0.0.17</version>
     <packaging>pom</packaging>
 
     <name>canal-spring</name>
