@@ -17,6 +17,7 @@ import java.beans.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +32,19 @@ public class TableFieldUtil {
     private static final Logger log = LoggerFactory.getLogger(TableFieldUtil.class);
 
     private static final Map<Class<?>, Map<String, String>> TABLE_FILED_CACHE_MAP = new ConcurrentHashMap<>();
+
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPER_MAP = new HashMap<>();
+
+    static {
+        PRIMITIVE_WRAPPER_MAP.put(int.class, Integer.class);
+        PRIMITIVE_WRAPPER_MAP.put(long.class, Long.class);
+        PRIMITIVE_WRAPPER_MAP.put(double.class, Double.class);
+        PRIMITIVE_WRAPPER_MAP.put(float.class, Float.class);
+        PRIMITIVE_WRAPPER_MAP.put(boolean.class, Boolean.class);
+        PRIMITIVE_WRAPPER_MAP.put(short.class, Short.class);
+        PRIMITIVE_WRAPPER_MAP.put(byte.class, Byte.class);
+        PRIMITIVE_WRAPPER_MAP.put(char.class, Character.class);
+    }
 
     /**
      * 获取字段名称和实体属性的对应关系
@@ -139,7 +153,17 @@ public class TableFieldUtil {
         if (String.class.equals(type)) {
             return value;
         }
-        String typeName = type.getTypeName();
+        Class<?> targetClass = null;
+        if (type instanceof Class<?>) {
+            Class<?> rawClass = (Class<?>) type;
+            if (rawClass.isPrimitive()) { // 如果是基本类型
+                // 使用 Map 获取对应的包装类
+                targetClass = PRIMITIVE_WRAPPER_MAP.get(rawClass);
+            } else {
+                targetClass = rawClass;
+            }
+        }
+        String typeName = targetClass != null ? targetClass.getName() : type.getTypeName();
         IColumnConvertor<?> convertor = CanalEntityConvertConfig.getInstance().getColumnConvertor(typeName);
         if (convertor == null) {
             log.warn("类型: {}没有找到对应的转换类", typeName);
